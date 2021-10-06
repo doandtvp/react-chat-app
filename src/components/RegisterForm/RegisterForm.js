@@ -7,32 +7,22 @@ import Input from '../UI/Input/Input';
 import Button from '../UI/Button/Button';
 import ErrorMessage from '../UI/ErrorMessage/ErrorMessage';
 import Notification from '../UI/Notificaton/Notification';
-import RegisterSuccess from '../UI/Notificaton/SuccessNotification'
+import RegisterSuccess from '../UI/Notificaton/SuccessNotification';
 
 const mapToProps = (store) => store;
 
 function RegisterForm(store) {
-
   //--> state
   const { userName, password, rePassword, displayName, email, phone, gender, errorMessage, validatePhoneNumber, notification, userId} = store;
-
   //--> actions
   const { getInputValue, getErrorMessage, getGender, getNotification} = store;
-
-  console.log(userId)
-
-  const handleChange = (e) => {
-    const value = e.target.value;
-    const name = e.target.name;
-    getInputValue({ name, value });
-  };
 
   const addNewUser = async ()  => {
     try {
         const response = await fetch('https://localhost:3333/api/Account/CreateUser', {
             method: 'POST',
             headers: {
-               'Content-Type': 'application/json'
+              'Content-Type': 'application/json'
             },
             body: JSON.stringify ({
                 userName: userName,
@@ -57,19 +47,14 @@ function RegisterForm(store) {
         }
 
         if(data.status === 400) {
-
           getErrorMessage(data.errors)
-
         } else if (data.statusCode === 400) {
-
           getErrorMessage(data.errors);
           getNotification({
             notification: data.restMessage,
             userId: 0
           });
-          
         } else {
-
           getErrorMessage('');
         }
         
@@ -78,25 +63,32 @@ function RegisterForm(store) {
     }
   }
 
+  const handleChange = (e) => {
+    const value = e.target.value;
+    const name = e.target.name;
+    getInputValue({ name, value });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     addNewUser()
   };
 
   return (
-    <section className='signup'>
+    <div>
+      <section className='signup'>
       <div className='container'>
         <div className='signup-content'>
           <div className='signup-form'>
             <h2 className='form-title'>Sign up</h2>
-            {notification && <Notification notification={notification} userId={userId} />}
+            {userId === 0 && notification && <Notification notification={notification} userId={userId} />}
             <form className='register-form'>
               <div className='fields-group'>
                 <Input
                   type='text'
                   name='userName'
                   id='userName'
-                  placeholder='User Name'
+                  placeholder='Your User Name'
                   icons='zmdi-account'
                   value={userName}
                   onHandleChange={handleChange}
@@ -223,6 +215,7 @@ function RegisterForm(store) {
                 name='signup'
                 value='Register'
                 onHandldeClick={handleSubmit}
+                phone={validatePhoneNumber}
               />
             </form>
           </div>
@@ -230,15 +223,16 @@ function RegisterForm(store) {
             <figure>
               <img src={signUp} alt='sign up img' />
             </figure>
-            <a href='http://localhost:3000/signin' className='signup-image-link'>
-              I am already member
-            </a>
+            <a href='http://localhost:3000/login' className='signup-image-link'>
+              I am already member</a>
           </div>
         </div>
       </div>
 
-      { userId !== 0 && <RegisterSuccess success={notification} title='Back to Login' url='/signin' /> }
-    </section>
+      { userId !== 0 && <RegisterSuccess success={notification} title='Back to Login' url='/login' /> }
+      </section>
+    </div>
+    
   );
 }
 

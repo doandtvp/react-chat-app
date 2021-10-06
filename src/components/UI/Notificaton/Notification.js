@@ -5,8 +5,8 @@ function Notification(props) {
     const { notification, userId } = props
 
     return (
-        <div className={'errors'}>
-            {userId === 0 && <p>{notification}</p>}
+        <div className={userId !== 0 ? 'notification' : 'errors'}>
+            <p>{notification}</p>
         </div>
     )
 }

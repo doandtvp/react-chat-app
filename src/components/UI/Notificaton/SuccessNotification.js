@@ -1,20 +1,16 @@
 import React from 'react';
-import './SuccessNotification.scss'
-import { useHistory } from 'react-router-dom';
-
+import './SuccessNotification.scss';
+ 
 function RegisterSuccess(props) {
-
-    const { success, title, url } = props
-    const history = useHistory();
-    const successRedirect = () => {
-        history.push(url)
-    }
-
+    const { success, title} = props
     return (
         <div className='success'>
-            <p>{success}</p>
-            <p>dang ky thanh cong tro ve trang dang nhap</p>
-            <button onClick={successRedirect}>{title}</button>
+            <div>
+                <p>{success}</p>
+                <button>
+                    <a href='http://localhost:3000/login'>{title}</a>
+                </button>
+            </div>
         </div>
     )
 }

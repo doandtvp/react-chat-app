@@ -15,7 +15,7 @@ const actions = (store) => ({
     } else {
       return {
         [payload.name]: payload.value,
-        validatePhoneNumber: ''
+        validatePhoneNumber: '',
       }
     }
   },
@@ -47,7 +47,12 @@ const actions = (store) => ({
         token: payload
       }
     }
-  } 
+  },
+  getAuth: (state, payload) => {
+    return {
+      auth: payload
+    }
+  }
 });
 
 export default actions;

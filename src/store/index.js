@@ -8,12 +8,13 @@ const initialState = {
   displayName: '',
   phone: '',
   gender: true,
-  reset: 0,
-  userId: 1,
+  rememberLogin: null,
+  userId: 0,
   errorMessage: '',
   validatePhoneNumber: '',
   notification: '',
   submitSuccess: false,
+  auth: false,
   token: null
 };
 

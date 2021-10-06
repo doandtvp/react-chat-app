@@ -62,6 +62,21 @@ figure {
   }
 }
 
+.form-submit-enable {
+  display: inline-block;
+  background: $grey-light;
+  color: #fff;
+  border-bottom: none;
+  width: auto;
+  padding: 15px 39px;
+  @include border-radius(5px);
+  margin-top: 25px;
+  cursor: not-allowed;
+  &:hover {
+    background: darken($grey-light, 10%);
+  }
+}
+
 #signin {
   margin-top: 16px;
 }

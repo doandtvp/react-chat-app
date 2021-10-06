@@ -15,13 +15,15 @@
     justify-content: center;
     border-radius: 5px;
     line-height: 2em;
+    box-sizing: border-box;
+    padding: 15px;
 }
 
-.success > p {
+.success p {
     font-size: 20px;
 }
 
-.success > button {
+.success button {
     padding: 15px;
     cursor: pointer;
     background-color: #6dabe4;
@@ -29,4 +31,13 @@
     color: white;
     font-size: 16px;
     border-radius: 5px;
+}
+
+.success a {
+    text-decoration: none;
+    color: white;
+}
+
+.success a:hover {
+    text-decoration: underline;
 }

@@ -2,3 +2,7 @@
 @import '../../../scss/common/minxi.scss';
 @import '../../../scss/common/extend.scss';
 @import '../../../scss/layouts/responsive.scss';
+
+.input-invalid {
+    border-bottom: 1px solid #ed0856;
+}
