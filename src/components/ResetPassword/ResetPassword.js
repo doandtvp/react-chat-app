@@ -12,6 +12,11 @@ import SuccessNotification from "../UI/Notificaton/SuccessNotification";
 const mapToProps = (store) => store;
 
 function ResetPassword(store) {
+
+  window.onbeforeunload = () => {
+    localStorage.removeItem("userID");
+  }
+
   //--> state
   const {
     password,
@@ -86,6 +91,10 @@ function ResetPassword(store) {
     resetPassword();
   };
 
+  const handleRemoveUserID = () => {
+    localStorage.removeItem('userID')
+  }
+
   return (
     <div className="main">
       <section className="signup">
@@ -102,7 +111,7 @@ function ResetPassword(store) {
                     type="password"
                     name="password"
                     id="password"
-                    placeholder="Your Password"
+                    placeholder="Your New Password"
                     icons="zmdi-lock"
                     value={password}
                     onHandleChange={handleChange}
@@ -118,7 +127,7 @@ function ResetPassword(store) {
                     type="password"
                     name="rePassword"
                     id="rePassword"
-                    placeholder="Confirm Password"
+                    placeholder="Confirm New Password"
                     icons="zmdi-lock-outline"
                     value={rePassword}
                     onHandleChange={handleChange}
@@ -142,7 +151,10 @@ function ResetPassword(store) {
               <figure>
                 <img src={signUp} alt="sign up img" />
               </figure>
-              <a href={`${currentUrl}/login`} className="signup-image-link">
+              <a 
+                href={`${currentUrl}/login`} 
+                onClick={handleRemoveUserID} 
+                className="signup-image-link">
                 Back to Login
               </a>
             </div>

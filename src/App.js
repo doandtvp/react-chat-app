@@ -23,7 +23,7 @@ function App(store) {
   // remember user login
   useEffect(() => {
     getCurrentUrl(url)
-
+    
     if(isAuth !== null || rememberUser !== null) {
       getAuth(true)
     } 

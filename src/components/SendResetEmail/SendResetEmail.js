@@ -43,6 +43,7 @@ function SendResetEmail(store) {
       const data = await response.json();
       if (data.statusCode === 200) {
         const userID = data.data[1];
+      localStorage.setItem("userID", data.data[1]);
         const token = data.data[0];
         confirmResetPassword({ userID, token });
 
@@ -80,8 +81,10 @@ function SendResetEmail(store) {
 
       const templateParams = {
         from_name: "Chat App",
+        from_email: 'doandtvp@gmail.com',
         to_name: data.data[0],
         to_email: email,
+        url: 'http://localhost:3000/reset_password'
       };
 
       const sendEmail = () => {
