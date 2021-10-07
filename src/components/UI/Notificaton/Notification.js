@@ -1,14 +1,13 @@
-import React from 'react'
+import React from "react";
 
 function Notification(props) {
-    
-    const { notification, userId } = props
+  const { notification, userId } = props;
 
-    return (
-        <div className={userId !== 0 ? 'notification' : 'errors'}>
-            <p>{notification}</p>
-        </div>
-    )
+  return (
+    <div className={userId !== 0 ? "notification" : "errors"}>
+      <p>{notification}</p>
+    </div>
+  );
 }
 
-export default Notification
+export default Notification;

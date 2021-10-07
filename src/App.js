@@ -2,7 +2,9 @@ import React, { useEffect } from 'react';
 import RegisterForm from './components/RegisterForm/RegisterForm';
 import LoginForm from './components/LoginForm/LoginForm';
 import HomePage from './components/HomePage/HomePage';
-import ForgotPassword from './components/ForgotPassword/ForgotPassword';
+import SendResetEmail from './components/SendResetEmail/SendResetEmail';
+import ResetPassword from './components/ResetPassword/ResetPassword';
+
 import {  BrowserRouter as Router , Switch, Route, Redirect } from 'react-router-dom';
 import PrivateRoute from './components/Route/PrivateRoute';
 import { connect } from 'redux-zero/react';
@@ -12,14 +14,20 @@ import './App.scss';
 const mapToProps = (store) => store
 
 function App(store) {
-  const { auth, getAuth } = store
-  const rememberUser = localStorage.getItem('token')
+  const { auth, getAuth, getCurrentUrl } = store
+  const rememberUser = localStorage.getItem('token');
+  const isAuth = sessionStorage.getItem('isAuth');
+  const getLastIndexOfSolidus = window.location.href.lastIndexOf('/')
+  const url = window.location.href.slice(0, getLastIndexOfSolidus)
 
+  // remember user login
   useEffect(() => {
-    if(rememberUser !== null) {
+    getCurrentUrl(url)
+
+    if(isAuth !== null || rememberUser !== null) {
       getAuth(true)
-    }
-  }, [rememberUser, getAuth])
+    } 
+  }, [url, getCurrentUrl, isAuth, rememberUser, getAuth])
 
   return (
     <Router>
@@ -38,8 +46,9 @@ function App(store) {
 
         <Route exact path='/login' component={LoginForm}/>
         <Route exact path='/signup' component={RegisterForm}/>
-        <Route exact path='/password_reset' component={ForgotPassword}/>
-        <PrivateRoute path='/homepage' auth={auth} token={rememberUser}>
+        <Route exact path='/reset_email' component={SendResetEmail}/>
+        <Route exact path='/reset_password' component={ResetPassword}/>
+        <PrivateRoute path='/homepage' auth={auth}>
           <HomePage/>
         </PrivateRoute>
       </Switch>

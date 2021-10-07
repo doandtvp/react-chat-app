@@ -41,16 +41,24 @@ const actions = (store) => ({
       userId: payload.userId
     }
   },
-  getToken: (state, payload) => {
-    if(payload !== null) {
-      return {
-        token: payload
-      }
-    }
-  },
   getAuth: (state, payload) => {
     return {
       auth: payload
+    }
+  },
+  getUserId: (state, payload) => {
+    return {
+      userId: payload
+    }
+  },
+  getResetToken: (state, payload) => {
+    return {
+      resetToken: payload
+    }
+  },
+  getCurrentUrl: (state, payload) => {
+    return {
+      currentUrl: payload
     }
   }
 });

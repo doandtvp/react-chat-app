@@ -15,7 +15,9 @@ const initialState = {
   notification: '',
   submitSuccess: false,
   auth: false,
-  token: null
+  token: null,
+  resetToken: null,
+  currentUrl: ''
 };
 
 const store = createStore(initialState);
