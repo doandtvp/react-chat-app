@@ -43,7 +43,6 @@ function SendResetEmail(store) {
       const data = await response.json();
       if (data.statusCode === 200) {
         const userID = data.data[1];
-      localStorage.setItem("userID", data.data[1]);
         const token = data.data[0];
         confirmResetPassword({ userID, token });
 
