@@ -32,7 +32,6 @@ function RegisterForm(store) {
   //--> actions
   const { getInputValue, getErrorMessage, getGender, getNotification } = store;
 
-  console.log(auth)
   if (auth === true) {
     return <Redirect to={"/homepage"} />;
   }
