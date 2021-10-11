@@ -1,0 +1,27 @@
+.sidebar {
+    width: 20%;
+    height: 500px;
+    box-sizing: border-box;
+    padding: 15px;
+}
+
+.search-bar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid black;
+    box-sizing: border-box;
+    padding: 15px;
+    border-radius: 40px;
+}
+
+.search {
+    padding: 0;
+    width: 94%;
+    border-bottom: none;
+}
+
+.search:focus {
+    border-bottom: none;
+}

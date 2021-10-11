@@ -1,0 +1,64 @@
+.user-profile {
+    width: 18%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 15px;
+}
+.user-profile p {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.escape {
+    width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+}
+
+.escape i {
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.escape a {
+    cursor: pointer;
+    text-decoration: none;
+    color: red;
+}
+
+.user-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin: 0 auto;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+.user-avatar .status {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: green;
+    right: 15px;
+    bottom: -2px;
+}
+
+.actions {
+    width: 100%;
+    height: 200px;
+}

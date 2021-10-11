@@ -9,7 +9,7 @@ function SuccessNotification(props) {
       <div>
         <p>{success}</p>
         <button>
-          <a href={`${url}/login`}>
+          <a href={`${url}`}>
             {title}
           </a>
         </button>

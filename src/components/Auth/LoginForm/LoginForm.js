@@ -1,12 +1,12 @@
 import React from "react";
 import "./LoginForm.scss";
-import singIn from "../../images/signin-image.jpg";
+import singIn from "../../../images/signin-image.jpg";
 import { connect } from "redux-zero/react";
-import actions from "../../store/actions";
-import Input from "../UI/Input/Input";
-import Button from "../UI/Button/Button";
-import ErrorMessage from "../UI/ErrorMessage/ErrorMessage";
-import Notification from "../UI/Notificaton/Notification";
+import actions from "../../../store/actions";
+import Input from "../../UI/Input/Input";
+import Button from "../../UI/Button/Button";
+import ErrorMessage from "../../UI/ErrorMessage/ErrorMessage";
+import Notification from "../../UI/Notificaton/Notification";
 import { Redirect } from "react-router-dom";
 import { useLocation } from "react-router";
 
@@ -45,7 +45,7 @@ function LoginForm(store) {
   const handleLogin = async () => {
     try {
       const response = await fetch(
-        "https://localhost:3333/api/Account/IdentityLoginRequest",
+        "https://localhost:5001/api/Account/IdentityLoginRequest",
         {
           method: "POST",
           headers: {
@@ -62,7 +62,6 @@ function LoginForm(store) {
       );
 
       const data = await response.json();
-      console.log(data);
 
       if (response.status === 200) {
         //remember loggin

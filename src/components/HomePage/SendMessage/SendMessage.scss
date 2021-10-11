@@ -1,0 +1,37 @@
+.send-message {
+    width: 100%;
+    height: 85px;
+    box-sizing: border-box;
+    padding: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid;
+}
+
+.icons > i {
+    font-size: 50px;
+    color: lightblue;
+    cursor: pointer;
+}
+
+.input-value {
+    width: 90%;
+}
+
+.input-value input {
+    padding: 0;
+    border: none;
+    font-size: 14px;
+}
+
+.send-button {
+    font-size: 30px;
+}
+
+.send-button i {
+    transform: rotate(-55deg);
+    color: lightcoral;
+    cursor: pointer;
+}

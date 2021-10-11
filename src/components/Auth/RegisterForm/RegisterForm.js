@@ -1,13 +1,14 @@
 import React from "react";
 import "./RegisterForm.scss";
-import signUp from "../../images/signup-image.jpg";
+import signUp from "../../../images/signup-image.jpg";
 import { connect } from "redux-zero/react";
-import actions from "../../store/actions";
-import Input from "../UI/Input/Input";
-import Button from "../UI/Button/Button";
-import ErrorMessage from "../UI/ErrorMessage/ErrorMessage";
-import Notification from "../UI/Notificaton/Notification";
-import RegisterSuccess from "../UI/Notificaton/SuccessNotification";
+import actions from "../../../store/actions";
+import Input from "../../UI/Input/Input";
+import Button from "../../UI/Button/Button";
+import ErrorMessage from "../../UI/ErrorMessage/ErrorMessage";
+import Notification from "../../UI/Notificaton/Notification";
+import RegisterSuccess from "../../UI/Notificaton/SuccessNotification";
+import { Redirect } from 'react-router-dom'
 
 const mapToProps = (store) => store;
 
@@ -21,6 +22,7 @@ function RegisterForm(store) {
     email,
     phone,
     gender,
+    auth,
     errorMessage,
     validatePhoneNumber,
     notification,
@@ -30,10 +32,15 @@ function RegisterForm(store) {
   //--> actions
   const { getInputValue, getErrorMessage, getGender, getNotification } = store;
 
+  console.log(auth)
+  if (auth === true) {
+    return <Redirect to={"/homepage"} />;
+  }
+
   const addNewUser = async () => {
     try {
       const response = await fetch(
-        "https://localhost:3333/api/Account/CreateUser",
+        "https://localhost:5001/api/Account/CreateUser",
         {
           method: "POST",
           headers: {
@@ -53,7 +60,6 @@ function RegisterForm(store) {
       );
 
       const data = await response.json();
-      console.log(data);
 
       if (data.statusCode === 200) {
         getNotification({
@@ -95,7 +101,7 @@ function RegisterForm(store) {
   };
 
   return (
-    <div>
+    <div className='main'>
       <section className="signup">
         <div className="container">
           <div className="signup-content">

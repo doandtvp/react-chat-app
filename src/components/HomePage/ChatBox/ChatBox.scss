@@ -1,0 +1,57 @@
+.chatbox {
+    height: auto;
+    border-radius: 0 10px 10px 17px;
+    box-sizing: border-box;
+    padding: 15px;
+    position: relative;
+    background-color: lightcoral;
+    color: white;
+}
+
+.chatbox p {
+    margin: 0;
+}
+
+.guess-box, .user-box {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    align-items: flex-start;
+    height: auto;
+    margin-bottom: 45px;
+}
+
+.guess-box > .avatar {
+    margin: 0 5px 0 0;
+}
+
+.guess-box .send-time{
+    position: absolute;
+    bottom: -25px;
+    margin: 0;
+    font-size: 12px;
+    right: 0;
+}
+
+.user-box {
+    justify-content: right;
+    flex-direction: row-reverse;
+}
+
+.user-box > .avatar {
+    margin: 0 0 0 5px;
+}
+
+.user-box > .chatbox {
+    border-radius: 10px 0 17px 10px;
+    background-color: lightblue;
+    
+}
+
+.user-box .send-time {
+    position: absolute;
+    bottom: -25px;
+    margin: 0;
+    font-size: 12px;
+    left: 0;
+}

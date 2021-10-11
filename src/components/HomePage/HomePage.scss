@@ -1,3 +1,9 @@
 .homepage {
     text-align: center;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    height: 960px;
+    border-bottom: 1px solid;
 }

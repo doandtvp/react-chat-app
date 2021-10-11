@@ -1,0 +1,17 @@
+.chat-container {
+    width: 61%;
+    height: auto;
+    border-right: 1px solid;
+    border-left: 1px solid;
+}
+
+.chat-content {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 15px;
+    height: 83%;
+}
+
+.chat-content span {
+    color: black;
+}

@@ -1,14 +1,13 @@
 import React from "react";
-import "./SendResetEmail.scss";
-import singIn from "../../images/signin-image.jpg";
-import Input from "../UI/Input/Input";
-import Button from "../UI/Button/Button";
+import singIn from "../../../images/signin-image.jpg";
+import Input from "../../UI/Input/Input";
+import Button from "../../UI/Button/Button";
 import { connect } from "redux-zero/react";
-import actions from "../../store/actions";
-import ErrorMessage from "../UI/ErrorMessage/ErrorMessage";
-import Notification from "../UI/Notificaton/Notification";
-import SuccessNotification from '../UI/Notificaton/SuccessNotification'
-import emailjs from "emailjs-com";
+import actions from "../../../store/actions";
+import ErrorMessage from "../../UI/ErrorMessage/ErrorMessage";
+import Notification from "../../UI/Notificaton/Notification";
+import SuccessNotification from '../../UI/Notificaton/SuccessNotification';
+import { Redirect } from 'react-router-dom';
 
 const mapToProps = (store) => store;
 
@@ -19,16 +18,21 @@ function SendResetEmail(store) {
     notification,
     userId,
     currentUrl,
+    auth,
     getInputValue,
     getErrorMessage,
     getNotification,
   } = store;
 
+  if (auth === true) {
+    return <Redirect to="/homepage" />;
+  }
+
   //--> check mail in database
   const handleResetMail = async () => {
     try {
       const response = await fetch(
-        "https://localhost:3333/api/Account/SendResetEmail",
+        "https://localhost:5001/api/Account/SendResetEmail",
         {
           method: "POST",
           headers: {
@@ -36,15 +40,13 @@ function SendResetEmail(store) {
           },
           body: JSON.stringify({
             email: email,
+            domain: 'http://localhost:3000/reset_password'
           }),
         }
       );
 
       const data = await response.json();
       if (data.statusCode === 200) {
-        const userID = data.data[1];
-        const token = data.data[0];
-        confirmResetPassword({ userID, token });
 
         getNotification({
           notification: data.restMessage,
@@ -63,51 +65,6 @@ function SendResetEmail(store) {
       if (response.status === 400) {
         getErrorMessage(data.errors);
       }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-   //--> send email
-   const confirmResetPassword = async ({ userID, token }) => {
-    try {
-      const response = await fetch(
-        `https://localhost:3333/api/Account/ResetPassword?uid=${userID}&token=${token}`
-      );
-
-      const data = await response.json();
-      localStorage.setItem("userID", data.data[1]);
-
-      const templateParams = {
-        from_name: "Chat App",
-        from_email: 'doandtvp@gmail.com',
-        to_name: data.data[0],
-        to_email: email,
-        url: 'http://localhost:3000/reset_password'
-      };
-
-      const sendEmail = () => {
-        emailjs
-          .send(
-            "service_jev9ftx",
-            "template_b8x99k2",
-            templateParams,
-            "user_25etgjWkhTWWZD9JhY0FI"
-          )
-          .then(
-            (response) => {
-              console.log("SUCCESS!", response.status, response.text);
-            },
-            (err) => {
-              console.log("FAILED...", err);
-            }
-          );
-      };
-
-      if (data.data[1]) {
-        sendEmail();
-      }
-      
     } catch (error) {
       console.log(error);
     }
@@ -138,7 +95,7 @@ function SendResetEmail(store) {
             </div>
 
             <div className="signin-form">
-              <h2 className="form-title">Reset Your Password</h2>
+              <h2 className="form-title">Recover Password</h2>
               {userId === 0 && notification && (
                 <Notification notification={notification} userId={userId} />
               )}
@@ -162,7 +119,7 @@ function SendResetEmail(store) {
                 <Button
                   type="button"
                   name="signin"
-                  value="Send Password Reset Email"
+                  value="Recover Password"
                   onHandldeClick={handleSubmit}
                 />
               </form>
@@ -194,7 +151,7 @@ function SendResetEmail(store) {
           <SuccessNotification
             success={notification}
             title="Back to Login"
-            url={currentUrl}
+            url='/login'
           />
         )}
       </section>

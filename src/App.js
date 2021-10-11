@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import RegisterForm from './components/RegisterForm/RegisterForm';
-import LoginForm from './components/LoginForm/LoginForm';
+import RegisterForm from './components/Auth/RegisterForm/RegisterForm';
+import LoginForm from './components/Auth/LoginForm/LoginForm';
 import HomePage from './components/HomePage/HomePage';
-import SendResetEmail from './components/SendResetEmail/SendResetEmail';
-import ResetPassword from './components/ResetPassword/ResetPassword';
+import SendResetEmail from './components/ForgotPassword/SendResetEmail/SendResetEmail';
+import ResetPassword from './components/ForgotPassword/ResetPassword/ResetPassword';
 
 import {  BrowserRouter as Router , Switch, Route, Redirect } from 'react-router-dom';
 import PrivateRoute from './components/Route/PrivateRoute';
@@ -17,8 +17,8 @@ function App(store) {
   const { auth, getAuth, getCurrentUrl } = store
   const rememberUser = localStorage.getItem('token');
   const isAuth = sessionStorage.getItem('isAuth');
-  const getLastIndexOfSolidus = window.location.href.lastIndexOf('/')
-  const url = window.location.href.slice(0, getLastIndexOfSolidus)
+  const getIndexOfSolidus = window.location.href.indexOf('/')
+  const url = window.location.href.slice(0, getIndexOfSolidus)
 
   // remember user login
   useEffect(() => {
@@ -47,7 +47,7 @@ function App(store) {
         <Route exact path='/login' component={LoginForm}/>
         <Route exact path='/signup' component={RegisterForm}/>
         <Route exact path='/reset_email' component={SendResetEmail}/>
-        <Route exact path='/reset_password' component={ResetPassword}/>
+        <Route exact path='/reset_password/:uid?/:token?' component={ResetPassword}/>
         <PrivateRoute path='/homepage' auth={auth}>
           <HomePage/>
         </PrivateRoute>

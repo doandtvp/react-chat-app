@@ -1,7 +1,7 @@
-@import '../../scss/common/variables.scss';
-@import '../../scss/common/minxi.scss';
-@import '../../scss/common/extend.scss';
-@import '../../scss/layouts/responsive.scss';
+@import '../../../scss/common/variables.scss';
+@import '../../../scss/common/minxi.scss';
+@import '../../../scss/common/extend.scss';
+@import '../../../scss/layouts/responsive.scss';
 
 .signin-content {
   @extend display-flex;

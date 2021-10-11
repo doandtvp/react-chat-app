@@ -1,13 +1,16 @@
 import React from 'react';
 import './HomePage.scss';
-import Header from '../Header/Header';  
+import Sidebar from './SideBar/Sidebar';
+import ChatContainer from './ChatContainer/ChatContainer';
+import UserProfile from '../User/UserProfile/UserProfile'
 
 function HomePage() {
     return (
         <>
-            <Header/>
             <div className='homepage'>
-                <h1>this is home page content</h1>
+                <Sidebar/>
+                <ChatContainer/>
+                <UserProfile/>
             </div>
         </>
     )
