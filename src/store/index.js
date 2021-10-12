@@ -16,8 +16,10 @@ const initialState = {
   submitSuccess: false,
   auth: false,
   token: null,
-  resetToken: null,
-  currentUrl: ''
+  currentUrl: '',
+  device: '',
+  otp: '',
+  mfa: false
 };
 
 const store = createStore(initialState);

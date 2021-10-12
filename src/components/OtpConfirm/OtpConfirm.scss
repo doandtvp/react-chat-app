@@ -1,0 +1,85 @@
+.otp {
+    top: 0;
+    width: 400px;
+    height: auto;
+    border-radius: 5px;
+    box-sizing: border-box;
+    padding: 15px;
+    position: absolute;
+    background-color: lightblue;
+    color: white;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}   
+
+
+
+.close-tab {
+    position: absolute;
+    top: -10px;
+    right: -7px;
+}
+
+.close-tab > i {
+    font-size: 25px;
+    color: lightcoral;
+    cursor: pointer;
+}
+
+.otp p {
+    font-size: 16px;
+}
+
+.otp span , .otp-expired{
+    color: crimson;
+}
+
+.otp-errors {
+    margin: 10px 0;
+}
+
+.otp-input {
+    padding: 10px;
+    border-radius: 5px;
+    margin: 20px auto;
+    border: none;
+}
+
+.otp-input:focus {
+    border: none;
+}
+
+.otp-buttons {
+    display: flex;
+    justify-content: center
+}
+
+.otp-buttons button {
+    box-sizing: border-box;
+    padding: 10px;
+    border-radius: 20px;
+    margin: 15px;
+    border: none;
+    cursor: pointer;
+    width: 80px;
+    text-align: center;
+    color: white;
+}
+
+.otp-success {
+    background-color: #6dabe4;
+}
+
+.otp-success:hover {
+    background-color: #4292dc;
+}
+
+.otp-resend {
+    background-color: lightcoral;
+}
+
+.otp-resend:hover {
+    background-color: #d94747;
+}

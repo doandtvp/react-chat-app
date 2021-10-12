@@ -51,14 +51,19 @@ const actions = (store) => ({
       userId: payload
     }
   },
-  getResetToken: (state, payload) => {
-    return {
-      resetToken: payload
-    }
-  },
   getCurrentUrl: (state, payload) => {
     return {
       currentUrl: payload
+    }
+  },
+  getDevice: (state, payload) => {
+    return {
+      device: payload
+    }
+  },
+  getMfa: (state, payload) => {
+    return {
+      mfa: payload
     }
   }
 });

@@ -95,7 +95,7 @@ function SendResetEmail(store) {
             </div>
 
             <div className="signin-form">
-              <h2 className="form-title">Recover Password</h2>
+              <h2 className="form-title">Reset Password</h2>
               {userId === 0 && notification && (
                 <Notification notification={notification} userId={userId} />
               )}
@@ -119,7 +119,7 @@ function SendResetEmail(store) {
                 <Button
                   type="button"
                   name="signin"
-                  value="Recover Password"
+                  value="Reset Password"
                   onHandldeClick={handleSubmit}
                 />
               </form>

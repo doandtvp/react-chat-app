@@ -7,6 +7,7 @@ import Input from "../../UI/Input/Input";
 import Button from "../../UI/Button/Button";
 import ErrorMessage from "../../UI/ErrorMessage/ErrorMessage";
 import Notification from "../../UI/Notificaton/Notification";
+import OtpConfirm from '../../OtpConfirm/OtpConfirm'
 import { Redirect } from "react-router-dom";
 import { useLocation } from "react-router";
 
@@ -21,19 +22,18 @@ function LoginForm(store) {
     errorMessage,
     notification,
     userId,
-    rememberLogin,
     auth,
     currentUrl,
+    mfa
   } = store;
   //--> actions
-  const { getInputValue, getErrorMessage, getNotification, getAuth } = store;
-
-  const userAgent = navigator.userAgent;
+  const { getInputValue, getErrorMessage, getNotification, getMfa, getDevice} = store;
   const date = new Date().getTimezoneOffset() / -60;
 
+  const userAgent = navigator.userAgent;
   const getIndexOfOpenBrackets = userAgent.indexOf("(");
   const getIndexOfCloseBrackets = userAgent.indexOf(")");
-  const getDevice = userAgent.slice(
+  const thisDevice = userAgent.slice(
     getIndexOfOpenBrackets + 1,
     getIndexOfCloseBrackets
   );
@@ -54,7 +54,7 @@ function LoginForm(store) {
           body: JSON.stringify({
             userName: userName,
             password: password,
-            deviceName: getDevice,
+            deviceName: thisDevice,
             expireDuration: 3600,
             timeZoneOffset: date,
           }),
@@ -62,18 +62,14 @@ function LoginForm(store) {
       );
 
       const data = await response.json();
+      console.log(data)
+      getDevice(thisDevice)
 
       if (response.status === 200) {
-        //remember loggin
-        if (data.token !== null && rememberLogin === "on") {
-          localStorage.setItem("token", data.token);
-        }
-
-        //loggin
-        if (data.token !== null) {
-          getAuth(true);
-          sessionStorage.setItem("isAuth", data.token);
-        }
+        getMfa(true)
+        // if(data.mfa) {
+        //   getMfa(data.mfa)
+        // }
 
         getNotification({
           notification: data.loginResultMessage,
@@ -98,6 +94,7 @@ function LoginForm(store) {
   const handleSubmit = (e) => {
     e.preventDefault();
     handleLogin();
+    getInputValue('');
   };
 
   return (
@@ -204,6 +201,8 @@ function LoginForm(store) {
             </div>
           </div>
         </div>
+
+        {mfa && <OtpConfirm />}
       </section>
     </div>
   );

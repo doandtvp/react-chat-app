@@ -33,8 +33,6 @@ function ResetPassword(store) {
   const userID = new URLSearchParams(reset).get("uid");
   const token = new URLSearchParams(reset).get("token");
 
- 
-
   useEffect(() => {
     if(userID && token) {
       const url = `https://localhost:5001/api/Account/ResetPassword?uid=${userID}&token=${token}`
@@ -132,7 +130,7 @@ function ResetPassword(store) {
               {userId === 0 && notification && (
                 <Notification notification={notification} userId={userId} />
               )}
-              {expired === false ? (
+              {!expired ? (
                 <form className="register-form">
                   <div className="fields-group">
                     <Input
