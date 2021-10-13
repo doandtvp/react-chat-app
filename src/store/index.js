@@ -19,6 +19,8 @@ const initialState = {
   currentUrl: '',
   device: '',
   otp: '',
+  iat: 0,
+  disable: true,
   mfa: false
 };
 

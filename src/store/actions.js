@@ -65,6 +65,16 @@ const actions = (store) => ({
     return {
       mfa: payload
     }
+  },
+  getIat: (state, payload) => {
+    return {
+      iat: payload
+    }
+  },
+  getDisable: (state, payload) => {
+    return {
+      disable: payload
+    }
   }
 });
 

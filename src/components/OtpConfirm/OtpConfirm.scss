@@ -32,8 +32,12 @@
     font-size: 16px;
 }
 
-.otp span , .otp-expired{
+.otp-errors, .otp-expired{
     color: crimson;
+}
+
+.otp-success, .otp-timer {
+    color: #4292dc;
 }
 
 .otp-errors {
@@ -62,24 +66,29 @@
     border-radius: 20px;
     margin: 15px;
     border: none;
-    cursor: pointer;
     width: 80px;
     text-align: center;
     color: white;
 }
 
-.otp-success {
+.otp-confirm {
     background-color: #6dabe4;
+    cursor: pointer;
 }
 
-.otp-success:hover {
+.otp-confirm:hover {
     background-color: #4292dc;
 }
 
 .otp-resend {
     background-color: lightcoral;
+    cursor: pointer;
 }
 
 .otp-resend:hover {
     background-color: #d94747;
+}
+.otp-disable {
+    background-color: gray;
+    cursor: not-allowed;
 }

@@ -27,7 +27,7 @@ function LoginForm(store) {
     mfa
   } = store;
   //--> actions
-  const { getInputValue, getErrorMessage, getNotification, getMfa, getDevice} = store;
+  const { getInputValue, getErrorMessage, getNotification, getMfa, getDevice, getIat} = store;
   const date = new Date().getTimezoneOffset() / -60;
 
   const userAgent = navigator.userAgent;
@@ -70,6 +70,9 @@ function LoginForm(store) {
         // if(data.mfa) {
         //   getMfa(data.mfa)
         // }
+
+        const initialCount = data.claims.iat * 1000
+        getIat(initialCount)
 
         getNotification({
           notification: data.loginResultMessage,

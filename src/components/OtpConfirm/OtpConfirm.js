@@ -1,20 +1,20 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import "./OtpConfirm.scss";
 import { connect } from "redux-zero/react";
 import actions from "../../store/actions";
-import Countdown, { zeroPad } from "react-countdown";
+import OtpCountDown from "../OtpCountDown/OtpCountDown";
 
 const mapToProps = (store) => store;
 
 function OtpConfirm(store) {
   const [notification, setNotification] = useState("");
-  const [resetKey, setResetKey] = useState(undefined);
-  const startDate = useRef(Date.now()).current;
- 
-  const { rememberLogin, otp, userId, device } = store;
-  const { getInputValue, getAuth , getMfa} = store;
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const { rememberLogin, otp, userId, device, disable } = store;
+  const { getInputValue, getAuth, getMfa, getIat } = store;
   const date = new Date().getTimezoneOffset() / -60;
 
+  //=> Validate OTP
   const handleValidateOTP = async () => {
     try {
       const response = await fetch(
@@ -38,15 +38,15 @@ function OtpConfirm(store) {
       const data = await response.json();
 
       if (response.status === 200) {
-        //remember loggin
+        //=> remember loggin
         if (data.token !== null && rememberLogin === "on") {
           localStorage.setItem("token", data.token);
-        }
-
-        //loggin
-        if (data.token !== null) {
+        } //=> loggin
+        else if (data.token !== null) {
           getAuth(true);
           sessionStorage.setItem("isAuth", data.token);
+        } else {
+          setIsSuccess(false)
         }
 
         setNotification(data.loginResultMessage);
@@ -56,6 +56,7 @@ function OtpConfirm(store) {
     }
   };
 
+  //=> reset OTP
   const handleResendOTP = async () => {
     try {
       const response = await fetch(
@@ -77,56 +78,72 @@ function OtpConfirm(store) {
       );
 
       const data = await response.json();
-      setResetKey(1)
+      console.log(data)
 
       if (response.status === 200) {
-        setNotification(data.loginResultMessage);
+        if(userId) {
+          setIsSuccess(true)
+          setNotification(data.loginResultMessage);
+        }
+
+        const currentDate = Date.now();
+        getIat(currentDate);
+
+        const value = "";
+        const name = "otp";
+        getInputValue({ name, value });
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const onCloseOTPTab = () => {
-    getMfa(false)
-  }
-
-  const renderer = ({ minutes, seconds, completed }) => {
-    if (completed) {
-      // Render a complete state
-      return <p className='otp-expired'>OTP has expired, please resend a new one </p>;
-    } else {
-      // Render a countdown
-      return (
-        <p>
-          OTP code expire after: <span>{zeroPad(minutes)}:{zeroPad(seconds)}</span>
-        </p>
-      );                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
-    }
-  };
-
+  //=> get OTP from input for post method
   const handleChange = (e) => {
     const value = e.target.value;
     const name = e.target.name;
     getInputValue({ name, value });
+
+    if (value !== "") {
+      setNotification("");
+    }
+  };
+
+  //=> prevent loading when user trigger enter
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  };
+
+  //=> Close tab
+  const onCloseOTPTab = () => {
+    const value = "";
+    const name = "otp";
+    getInputValue({ name, value });
+    getIat(0);
+    getMfa(false);
   };
 
   return (
     <div className="otp">
-      <div className='close-tab'>
+      <div className="close-tab">
         <i onClick={onCloseOTPTab} className="zmdi zmdi-close-circle-o"></i>
       </div>
-      <p>An OTP code was send to your email, check it and confirm to loggin and join the chat</p>
-      <p>If you don't receive email or OTP code was expire then resend to get a new one</p>
-      
-      <div className='opt-exprise'>
-        <Countdown date={startDate + 90000} renderer={renderer} key={resetKey}/>
-      </div>
+      <p>
+        An OTP code was send to your email, check it and confirm to loggin and
+        join the chat
+      </p>
+      <p>
+        If you don't receive email or OTP code was expire then resend to get a
+        new one
+      </p>
 
-      <div className="otp-errors">
+      {/*countdown timer for OTP code */}
+      <OtpCountDown />
+
+      <div className={isSuccess ? "otp-success" : "otp-errors"}>
         <span>{notification}</span>
       </div>
-      <form className="register-form">
+      <form className="register-form" onSubmit={handleSubmit}>
         <div className="otp-group">
           <input
             className="otp-input"
@@ -137,14 +154,17 @@ function OtpConfirm(store) {
             onChange={handleChange}
           />
           <div className="otp-buttons">
-            <button 
-              type='button' 
-              className="otp-resend"
-              onClick={handleResendOTP}
-            >Resend</button>
             <button
               type="button"
-              className="otp-success"
+              className={disable ? "otp-disable" : "otp-resend"}
+              onClick={handleResendOTP}
+              disabled={disable}
+            >
+              Resend
+            </button>
+            <button
+              type="button"
+              className="otp-confirm"
               onClick={handleValidateOTP}
             >
               Confirm
