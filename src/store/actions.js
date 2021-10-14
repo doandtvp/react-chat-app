@@ -66,14 +66,24 @@ const actions = (store) => ({
       mfa: payload
     }
   },
-  getIat: (state, payload) => {
+  getCurrentTime: (state, payload) => {
     return {
-      iat: payload
+      currentTime: payload
+    }
+  },
+  getExpTime: (state, payload) => {
+    return {
+      expTime: payload
     }
   },
   getDisable: (state, payload) => {
     return {
       disable: payload
+    }
+  },
+  getResetKey: (state, payload) => {
+    return {
+      resetKey: payload
     }
   }
 });

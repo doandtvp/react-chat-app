@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import Countdown, { zeroPad } from "react-countdown";
 import { connect } from "redux-zero/react";
 import actions from "../../store/actions";
@@ -6,35 +6,43 @@ import actions from "../../store/actions";
 const mapToProps = (store) => store;
 
 function OtpCountDown(store) {
-  const { iat, getIat, getDisable } = store;
+  const { resetKey, expTime, currentTime, getCurrentTime } = store;
+  const date = useRef(Date.now());
+
+  useEffect(() => {
+    getCurrentTime(date.current);
+  }, [getCurrentTime]);
 
   const renderer = ({ minutes, seconds, completed }) => {
-    if (!completed) {
-      // Render a countdown
-      getDisable(true)
+    if (completed) {
+      // Render a complete state
       return (
-        <p className="otp-coundown">
-          OTP code expire after{" "}
-          <span className='otp-timer'>
-            {zeroPad(minutes)}:{zeroPad(seconds)}
-          </span>
+        <p className="otp-expired">
+          OTP code has expired, please resend a new one
         </p>
       );
     } else {
-      // Render a complete state
-      getDisable(false)
-      getIat(0)
+      // Render a countdown
       return (
-        <p className="otp-expired"></p>
+        <p className="otp-countdown">
+          OTP code expire after{" "}
+          <span className="otp-timer">
+            {zeroPad(minutes)}:{zeroPad(seconds)}
+          </span>
+        </p>
       );
     }
   };
 
   return (
-   <div className="opt-exprise">
-      { iat ? 
-        <Countdown date={iat + 6000} renderer={renderer}/> 
-        : <p className="otp-expired">OTP code has expired, please resend a new one </p>}
+    <div className="opt-exprise">
+      {currentTime && (
+        <Countdown
+          date={currentTime + expTime}
+          renderer={renderer}
+          key={resetKey}
+        />
+      )}
     </div>
   );
 }

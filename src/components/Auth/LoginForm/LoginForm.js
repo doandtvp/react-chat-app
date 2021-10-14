@@ -7,7 +7,7 @@ import Input from "../../UI/Input/Input";
 import Button from "../../UI/Button/Button";
 import ErrorMessage from "../../UI/ErrorMessage/ErrorMessage";
 import Notification from "../../UI/Notificaton/Notification";
-import OtpConfirm from '../../OtpConfirm/OtpConfirm'
+import OtpConfirm from "../../OtpConfirm/OtpConfirm";
 import { Redirect } from "react-router-dom";
 import { useLocation } from "react-router";
 
@@ -24,10 +24,19 @@ function LoginForm(store) {
     userId,
     auth,
     currentUrl,
-    mfa
+    mfa,
   } = store;
   //--> actions
-  const { getInputValue, getErrorMessage, getNotification, getMfa, getDevice, getIat} = store;
+  const {
+    getInputValue,
+    getErrorMessage,
+    getNotification,
+    getMfa,
+    getDevice,
+    getExpTime,
+    getCurrentTime,
+    getResetKey,
+  } = store;
   const date = new Date().getTimezoneOffset() / -60;
 
   const userAgent = navigator.userAgent;
@@ -62,17 +71,18 @@ function LoginForm(store) {
       );
 
       const data = await response.json();
-      console.log(data)
-      getDevice(thisDevice)
+      console.log(data);
+      getDevice(thisDevice);
 
       if (response.status === 200) {
-        getMfa(true)
+        getExpTime(6000);
+        getCurrentTime(Date.now());
+        getResetKey(Math.random());
+
+        getMfa(true);
         // if(data.mfa) {
         //   getMfa(data.mfa)
         // }
-
-        const initialCount = data.claims.iat * 1000
-        getIat(initialCount)
 
         getNotification({
           notification: data.loginResultMessage,
@@ -97,7 +107,6 @@ function LoginForm(store) {
   const handleSubmit = (e) => {
     e.preventDefault();
     handleLogin();
-    getInputValue('');
   };
 
   return (
@@ -118,7 +127,6 @@ function LoginForm(store) {
               {userId === 0 && notification && (
                 <Notification notification={notification} userId={userId} />
               )}
-
               <form className="register-form">
                 <div className="fields-group">
                   <Input
@@ -180,7 +188,7 @@ function LoginForm(store) {
                   Forgot your password?
                 </a>
               </form>
-              
+
               <div className="social-login">
                 <span className="social-label">Or login with</span>
                 <ul className="socials">

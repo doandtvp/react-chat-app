@@ -18,10 +18,11 @@ const initialState = {
   token: null,
   currentUrl: '',
   device: '',
-  otp: '',
-  iat: 0,
+  expTime: 0,
+  currentTime: 0,
   disable: true,
-  mfa: false
+  mfa: false,
+  resetKey: undefined
 };
 
 const store = createStore(initialState);
