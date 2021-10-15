@@ -36,6 +36,7 @@ function LoginForm(store) {
     getExpTime,
     getCurrentTime,
     getResetKey,
+    getOtp
   } = store;
   const date = new Date().getTimezoneOffset() / -60;
 
@@ -80,6 +81,7 @@ function LoginForm(store) {
         getResetKey(Math.random());
 
         getMfa(true);
+        getOtp('345678')
         // if(data.mfa) {
         //   getMfa(data.mfa)
         // }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import "./OtpConfirm.scss";
 import { connect } from "redux-zero/react";
 import actions from "../../store/actions";
@@ -9,10 +9,21 @@ const mapToProps = (store) => store;
 
 function OtpConfirm(store) {
   const [notification, setNotification] = useState("");
-  const [otpValue, setOtpValue] = useState("");
+  // const [otpValue, setOtpValue] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const { rememberLogin, userId, device, disable, expTime, currentUrl } = store;
+  const {
+    rememberLogin,
+    userId,
+    device,
+    disable,
+    expTime,
+    currentUrl,
+    otp,
+    resetKey,
+    getOtp,
+  } = store;
+
   const {
     getAuth,
     getMfa,
@@ -23,18 +34,47 @@ function OtpConfirm(store) {
   } = store;
   const date = new Date().getTimezoneOffset() / -60;
 
-  const handleToggle = () => {
+  const handleToggle = useCallback(() => {
     if (expTime !== 0) {
       setTimeout(() => {
         getDisable(false);
         getCurrentTime(expTime);
       }, expTime);
     }
-  };
+  }, [expTime, getDisable, getCurrentTime]);
 
   useEffect(() => {
     handleToggle();
-  }, []);
+  }, [handleToggle]);
+
+  //=> get new OTP after reset
+  useEffect(() => {
+    //=> getAllActiveOTP
+    const getAllActiveOTP = async () => {
+      try {
+        const response = await fetch(
+          "https://localhost:5001/api/Account/GetAllActiveOTP"
+        );
+        const data = await response.json();
+
+        console.log(data.length);
+        if (data.length > 0) {
+          data.forEach((newOtp) => {
+            if (newOtp.userID === userId) {
+              getExpTime(6000);
+              console.log(newOtp);
+              //=> set new OTP here
+              // getOtp(newOtp.otp)
+            }
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getAllActiveOTP();
+  }, [resetKey, userId, getExpTime, getOtp]);
 
   //=> Validate OTP
   const handleValidateOTP = async () => {
@@ -48,7 +88,7 @@ function OtpConfirm(store) {
           },
           body: JSON.stringify({
             userId: userId,
-            otp: otpValue,
+            otp: otp,
             deviceName: device,
             expireTime: "2021-10-11T10:05:36.910Z",
             expireDuration: 3600,
@@ -89,7 +129,7 @@ function OtpConfirm(store) {
           },
           body: JSON.stringify({
             userId: userId,
-            otp: otpValue,
+            otp: otp,
             deviceName: device,
             expireTime: "2021-10-11T10:05:36.910Z",
             expireDuration: 3600,
@@ -104,11 +144,9 @@ function OtpConfirm(store) {
           setIsSuccess(true);
           setNotification(data.loginResultMessage);
         }
-
-        getExpTime(6000);
+        // setOtpValue("")
         getCurrentTime(Date.now());
         getResetKey(Math.random());
-        setOtpValue("")
         getDisable(true);
       }
     } catch (error) {
@@ -116,37 +154,21 @@ function OtpConfirm(store) {
     }
   };
 
-  // => getAllActiveOTP
-  // const getAllActiveOTP = async () =>{
-  //   try {
-  //     const response = await fetch('https://localhost:5001/api/Account/GetAllActiveOTP');
-  //     const data = await response.json()
-
-  //     data.forEach(otp => {
-  //       if(otp.userId === userId) {
-  //         console.log(otp)
-  //       }
-  //     });
-
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // }
-
-  const handleChange = (e) => {
-    setOtpValue(e.target.value)
-
-    if(e.target.value !== "") {
-      setNotification("")
-    }
-  }
-
   //=> resend OTP
   const handleResendOTP = () => {
     resendOTP();
     handleToggle();
     // getAllActiveOTP();
   };
+
+  //=> get otp from input
+  // const handleChange = (e) => {
+  //   setOtpValue(e.target.value)
+
+  //   if(e.target.value !== "") {
+  //     setNotification("")
+  //   }
+  // }
 
   //=> prevent loading when user trigger enter
   const handleSubmit = (e) => {
@@ -168,14 +190,9 @@ function OtpConfirm(store) {
         </a>
       </div>
       <p>
-        An OTP code was send to your email, check it and confirm to loggin and
-        join the chat
+        An OTP code was generate for you click confirm to loggin. After 2
+        minutes OTP code will expried so click resend to get a new one
       </p>
-      <p>
-        If you don't receive email or OTP code was expire then resend to get a
-        new one
-      </p>
-
       {/*countdown timer for OTP code */}
       <OtpCountDown />
 
@@ -184,14 +201,14 @@ function OtpConfirm(store) {
       </div>
       <form className="register-form" onSubmit={handleSubmit}>
         <div className="otp-group">
-          <input
+          {/* <input
             className="otp-input"
             placeholder="Enter your OTP Code"
             type="text"
             name="otp"
             onChange={handleChange}
             value={otpValue}
-          />
+          /> */}
           <div className="otp-buttons">
             <button
               type="button"

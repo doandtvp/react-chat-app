@@ -18,14 +18,14 @@ function OtpCountDown(store) {
       // Render a complete state
       return (
         <p className="otp-expired">
-          OTP code has expired, please resend a new one
+          Your OTP code has expired, please resend a new one!
         </p>
       );
     } else {
       // Render a countdown
       return (
         <p className="otp-countdown">
-          OTP code expire after{" "}
+          YourOTP code expire after{" "}
           <span className="otp-timer">
             {zeroPad(minutes)}:{zeroPad(seconds)}
           </span>

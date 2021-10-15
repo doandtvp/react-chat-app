@@ -2,12 +2,12 @@ const actions = (store) => ({
   getInputValue: (state, payload) => {
     let regVnF = /(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/;
 
-    if(payload.name === 'phone' && payload.value === '') {
+    if (payload.name === 'phone' && payload.value === '') {
       return {
         [payload.name]: payload.value,
         validatePhoneNumber: ''
       }
-    } else if(payload.name === 'phone' && !regVnF.test(payload.value)) {
+    } else if (payload.name === 'phone' && !regVnF.test(payload.value)) {
       return {
         [payload.name]: payload.value,
         validatePhoneNumber: 'Your Phone Number is invalid'
@@ -19,15 +19,15 @@ const actions = (store) => ({
       }
     }
   },
-  getGender: (store, payload) => {
+  getGender: (state, payload) => {
     if (payload === 'male') {
-        return {
-          gender: true
-        } 
+      return {
+        gender: true
+      }
     } else {
-        return {
-          gender: false
-        };
+      return {
+        gender: false
+      };
     }
   },
   getErrorMessage: (state, payload) => {
@@ -64,6 +64,11 @@ const actions = (store) => ({
   getMfa: (state, payload) => {
     return {
       mfa: payload
+    }
+  },
+  getOtp: (state, payload) => {
+    return {
+      otp: payload
     }
   },
   getCurrentTime: (state, payload) => {
