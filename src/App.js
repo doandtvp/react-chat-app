@@ -14,20 +14,17 @@ import './App.scss';
 const mapToProps = (store) => store
 
 function App(store) {
-  const { auth, getAuth, getCurrentUrl } = store
+  const { auth, getAuth } = store
   const rememberUser = localStorage.getItem('token');
   const isAuth = sessionStorage.getItem('isAuth');
-  const getIndexOfSolidus = window.location.href.indexOf('/')
-  const url = window.location.href.slice(0, getIndexOfSolidus)
 
   // remember user login
   useEffect(() => {
-    getCurrentUrl(url)
     
     if(isAuth !== null || rememberUser !== null) {
       getAuth(true)
     } 
-  }, [url, getCurrentUrl, isAuth, rememberUser, getAuth])
+  }, [ isAuth, rememberUser, getAuth])
 
   return (
     <Router>

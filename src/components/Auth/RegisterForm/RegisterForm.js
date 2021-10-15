@@ -8,7 +8,7 @@ import Button from "../../UI/Button/Button";
 import ErrorMessage from "../../UI/ErrorMessage/ErrorMessage";
 import Notification from "../../UI/Notificaton/Notification";
 import RegisterSuccess from "../../UI/Notificaton/SuccessNotification";
-import { Redirect } from 'react-router-dom'
+import { Redirect, Link } from 'react-router-dom';
 
 const mapToProps = (store) => store;
 
@@ -27,10 +27,9 @@ function RegisterForm(store) {
     validatePhoneNumber,
     notification,
     userId,
-    currentUrl,
   } = store;
   //--> actions
-  const { getInputValue, getErrorMessage, getGender, getNotification } = store;
+  const { getInputValue, getErrorMessage, getGender, getNotification, getResetAll } = store;
 
   if (auth === true) {
     return <Redirect to={"/homepage"} />;
@@ -267,9 +266,9 @@ function RegisterForm(store) {
               <figure>
                 <img src={signUp} alt="sign up img" />
               </figure>
-              <a href={`${currentUrl}/login`} className="signup-image-link">
+              <Link to='/login' className="signup-image-link" onClick={getResetAll}>
                 I am already member
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -278,7 +277,6 @@ function RegisterForm(store) {
           <RegisterSuccess
             success={notification}
             title="Back to Login"
-            url="/login"
           />
         )}
       </section>

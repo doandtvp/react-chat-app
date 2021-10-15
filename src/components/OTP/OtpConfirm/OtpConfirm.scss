@@ -1,6 +1,6 @@
 .otp {
     top: 0;
-    width: 400px;
+    width: 410px;
     height: auto;
     border-radius: 5px;
     box-sizing: border-box;
@@ -13,8 +13,6 @@
     transform: translate(-50%, -50%);
     text-align: center;
 }   
-
-
 
 .close-tab {
     position: absolute;
@@ -88,6 +86,7 @@
 .otp-resend:hover {
     background-color: #d94747;
 }
+
 .otp-disable {
     background-color: gray;
     cursor: not-allowed;

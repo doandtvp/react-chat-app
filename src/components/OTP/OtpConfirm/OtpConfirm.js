@@ -1,15 +1,16 @@
 import React, { useState, useCallback } from "react";
 import "./OtpConfirm.scss";
 import { connect } from "redux-zero/react";
-import actions from "../../store/actions";
+import actions from "../../../store/actions";
 import OtpCountDown from "../OtpCountDown/OtpCountDown";
 import { useEffect } from "react/cjs/react.development";
+import { Link } from 'react-router-dom';
 
 const mapToProps = (store) => store;
 
 function OtpConfirm(store) {
   const [notification, setNotification] = useState("");
-  // const [otpValue, setOtpValue] = useState("");
+  const [otpValue, setOtpValue] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
 
   const {
@@ -18,16 +19,11 @@ function OtpConfirm(store) {
     device,
     disable,
     expTime,
-    currentUrl,
-    otp,
-    resetKey,
-    getOtp,
   } = store;
 
   const {
     getAuth,
     getMfa,
-    getExpTime,
     getDisable,
     getResetKey,
     getCurrentTime,
@@ -44,37 +40,42 @@ function OtpConfirm(store) {
   }, [expTime, getDisable, getCurrentTime]);
 
   useEffect(() => {
-    handleToggle();
-  }, [handleToggle]);
+    const countdownTimer = setTimeout(() => {
+      getDisable(false);
+      getCurrentTime(expTime);
+    }, expTime);
+
+    return () => {
+      clearTimeout(countdownTimer)
+    }
+  }, []);
 
   //=> get new OTP after reset
-  useEffect(() => {
+  // useEffect(() => {
     //=> getAllActiveOTP
-    const getAllActiveOTP = async () => {
-      try {
-        const response = await fetch(
-          "https://localhost:5001/api/Account/GetAllActiveOTP"
-        );
-        const data = await response.json();
+  //   const getAllActiveOTP = async () => {
+  //     try {
+  //       const response = await fetch(
+  //         "https://localhost:5001/api/Account/GetAllActiveOTP"
+  //       );
+  //       const data = await response.json();
 
-        console.log(data.length);
-        if (data.length > 0) {
-          data.forEach((newOtp) => {
-            if (newOtp.userID === userId) {
-              getExpTime(6000);
-              console.log(newOtp);
-              //=> set new OTP here
-              // getOtp(newOtp.otp)
-            }
-          });
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
+  //       console.log(data.length);
+  //       if (data.length > 0) {
+  //         data.forEach((newOtp) => {
+  //           if (newOtp.userID === userId) {
+  //             getExpTime(10000);
+  //             console.log(newOtp.otp);
+  //           }
+  //         });
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
 
-    getAllActiveOTP();
-  }, [resetKey, userId, getExpTime, getOtp]);
+  //   getAllActiveOTP();
+  // }, [userId, getExpTime]);
 
   //=> Validate OTP
   const handleValidateOTP = async () => {
@@ -88,7 +89,7 @@ function OtpConfirm(store) {
           },
           body: JSON.stringify({
             userId: userId,
-            otp: otp,
+            otp: otpValue,
             deviceName: device,
             expireTime: "2021-10-11T10:05:36.910Z",
             expireDuration: 3600,
@@ -129,9 +130,7 @@ function OtpConfirm(store) {
           },
           body: JSON.stringify({
             userId: userId,
-            otp: otp,
             deviceName: device,
-            expireTime: "2021-10-11T10:05:36.910Z",
             expireDuration: 3600,
             timeZoneOffset: date,
           }),
@@ -144,9 +143,11 @@ function OtpConfirm(store) {
           setIsSuccess(true);
           setNotification(data.loginResultMessage);
         }
-        // setOtpValue("")
+        setOtpValue("")
+
         getCurrentTime(Date.now());
         getResetKey(Math.random());
+        
         getDisable(true);
       }
     } catch (error) {
@@ -162,13 +163,13 @@ function OtpConfirm(store) {
   };
 
   //=> get otp from input
-  // const handleChange = (e) => {
-  //   setOtpValue(e.target.value)
+  const handleChange = (e) => {
+    setOtpValue(e.target.value)
 
-  //   if(e.target.value !== "") {
-  //     setNotification("")
-  //   }
-  // }
+    if(e.target.value !== "") {
+      setNotification("")
+    }
+  }
 
   //=> prevent loading when user trigger enter
   const handleSubmit = (e) => {
@@ -178,16 +179,15 @@ function OtpConfirm(store) {
   //=> Close tab
   const onCloseOTPTab = () => {
     getDisable(true);
-    getExpTime(0);
     getMfa(false);
   };
 
   return (
     <div className="otp">
       <div className="close-tab">
-        <a href={`${currentUrl}/login`}>
+        <Link to='/login'>
           <i onClick={onCloseOTPTab} className="zmdi zmdi-close-circle-o"></i>
-        </a>
+        </Link>
       </div>
       <p>
         An OTP code was generate for you click confirm to loggin. After 2
@@ -201,14 +201,14 @@ function OtpConfirm(store) {
       </div>
       <form className="register-form" onSubmit={handleSubmit}>
         <div className="otp-group">
-          {/* <input
+          <input
             className="otp-input"
             placeholder="Enter your OTP Code"
             type="text"
             name="otp"
             onChange={handleChange}
             value={otpValue}
-          /> */}
+          />
           <div className="otp-buttons">
             <button
               type="button"

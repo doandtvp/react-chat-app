@@ -5,10 +5,12 @@ import signUp from "../../../images/signup-image.jpg";
 import Input from "../../UI/Input/Input";
 import Button from "../../UI/Button/Button";
 import { connect } from "redux-zero/react";
+import { Link } from "react-router-dom";
 import actions from "../../../store/actions";
 import ErrorMessage from "../../UI/ErrorMessage/ErrorMessage";
 import Notification from "../../UI/Notificaton/Notification";
 import SuccessNotification from "../../UI/Notificaton/SuccessNotification";
+
 
 const mapToProps = (store) => store;
 
@@ -22,12 +24,11 @@ function ResetPassword(store) {
     errorMessage,
     notification,
     userId,
-    currentUrl,
     auth
   } = store;
 
   //--> actions
-  const { getInputValue, getErrorMessage, getNotification } = store;
+  const { getInputValue, getErrorMessage, getNotification, getResetAll } = store;
 
   const reset = useLocation().search;
   const userID = new URLSearchParams(reset).get("uid");
@@ -176,9 +177,9 @@ function ResetPassword(store) {
                 <div className="new-token">
                   This reset password email is not available. It might be used
                   or expired. Please{" "}
-                  <a href={`${currentUrl}/reset_email`}>
+                  <Link to='/reset_email'>
                     send a new reset password email
-                  </a>
+                  </Link>
                 </div>
               )}
             </div>
@@ -186,9 +187,9 @@ function ResetPassword(store) {
               <figure>
                 <img src={signUp} alt="sign up img" />
               </figure>
-              <a href={`${currentUrl}/login`} className="signup-image-link">
+              <Link to='/login' className="signup-image-link" onClick={getResetAll}>
                 Back to Login
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -197,7 +198,6 @@ function ResetPassword(store) {
           <SuccessNotification
             success={notification}
             title="Back to Login"
-            url="/login"
           />
         )}
       </section>

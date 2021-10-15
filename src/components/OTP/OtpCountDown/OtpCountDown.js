@@ -1,13 +1,14 @@
 import React, { useRef, useEffect } from "react";
 import Countdown, { zeroPad } from "react-countdown";
 import { connect } from "redux-zero/react";
-import actions from "../../store/actions";
+import actions from "../../../store/actions";
 
 const mapToProps = (store) => store;
 
 function OtpCountDown(store) {
   const { resetKey, expTime, currentTime, getCurrentTime } = store;
   const date = useRef(Date.now());
+  // const expDuration = Date.parse('2021-10-15T06:23:04.7051311Z') - currentTime
 
   useEffect(() => {
     getCurrentTime(date.current);
@@ -25,7 +26,7 @@ function OtpCountDown(store) {
       // Render a countdown
       return (
         <p className="otp-countdown">
-          YourOTP code expire after{" "}
+          Your OTP code will expire after{" "}
           <span className="otp-timer">
             {zeroPad(minutes)}:{zeroPad(seconds)}
           </span>

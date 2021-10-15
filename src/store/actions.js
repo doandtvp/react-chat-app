@@ -66,11 +66,6 @@ const actions = (store) => ({
       mfa: payload
     }
   },
-  getOtp: (state, payload) => {
-    return {
-      otp: payload
-    }
-  },
   getCurrentTime: (state, payload) => {
     return {
       currentTime: payload
@@ -89,6 +84,20 @@ const actions = (store) => ({
   getResetKey: (state, payload) => {
     return {
       resetKey: payload
+    }
+  },
+  getResetAll: (state, payload) => {
+    return {
+      userName: '',
+      password: '',
+      rePassword: '',
+      email: '',
+      displayName: '',
+      phone: '',
+      notification: '',
+      errorMessage: '',
+      userId: 0,
+      mfa: false,
     }
   }
 });

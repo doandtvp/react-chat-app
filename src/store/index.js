@@ -10,7 +10,6 @@ const initialState = {
   errorMessage: '',
   validatePhoneNumber: '',
   notification: '',
-  currentUrl: '',
   device: '',
   userId: 0,
   expTime: 0,
@@ -22,7 +21,6 @@ const initialState = {
   mfa: false,
   rememberLogin: null,
   token: null,
-  otp: null,
   resetKey: undefined,
 };
 

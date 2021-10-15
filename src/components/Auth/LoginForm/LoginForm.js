@@ -7,8 +7,8 @@ import Input from "../../UI/Input/Input";
 import Button from "../../UI/Button/Button";
 import ErrorMessage from "../../UI/ErrorMessage/ErrorMessage";
 import Notification from "../../UI/Notificaton/Notification";
-import OtpConfirm from "../../OtpConfirm/OtpConfirm";
-import { Redirect } from "react-router-dom";
+import OtpConfirm from "../../OTP/OtpConfirm/OtpConfirm";
+import { Redirect, Link } from "react-router-dom";
 import { useLocation } from "react-router";
 
 const mapToProps = (store) => store;
@@ -23,7 +23,6 @@ function LoginForm(store) {
     notification,
     userId,
     auth,
-    currentUrl,
     mfa,
   } = store;
   //--> actions
@@ -35,8 +34,7 @@ function LoginForm(store) {
     getDevice,
     getExpTime,
     getCurrentTime,
-    getResetKey,
-    getOtp
+    getResetAll
   } = store;
   const date = new Date().getTimezoneOffset() / -60;
 
@@ -76,12 +74,11 @@ function LoginForm(store) {
       getDevice(thisDevice);
 
       if (response.status === 200) {
-        getExpTime(6000);
+        getExpTime(10000);
+        //=> trigger timer when duration exprise
         getCurrentTime(Date.now());
-        getResetKey(Math.random());
 
         getMfa(true);
-        getOtp('345678')
         // if(data.mfa) {
         //   getMfa(data.mfa)
         // }
@@ -120,9 +117,12 @@ function LoginForm(store) {
               <figure>
                 <img src={singIn} alt="sign in img" />
               </figure>
-              <a href={`${currentUrl}/signup`} className="signup-image-link">
+              <Link to='/signup' onClick={getResetAll} className="signup-image-link">
                 Create an account
-              </a>
+              </Link>
+              {/* <a href={`${currentUrl}/signup`} className="signup-image-link">
+                Create an account
+              </a> */}
             </div>
             <div className="signin-form">
               <h2 className="form-title">Sign In</h2>
@@ -186,9 +186,9 @@ function LoginForm(store) {
                   onHandldeClick={handleSubmit}
                 />
 
-                <a href={`${currentUrl}/reset_email`} className="reset_email">
+                <Link to='/reset_email' className="reset_email">
                   Forgot your password?
-                </a>
+                </Link>
               </form>
 
               <div className="social-login">

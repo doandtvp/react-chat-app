@@ -7,7 +7,7 @@ import actions from "../../../store/actions";
 import ErrorMessage from "../../UI/ErrorMessage/ErrorMessage";
 import Notification from "../../UI/Notificaton/Notification";
 import SuccessNotification from '../../UI/Notificaton/SuccessNotification';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 
 const mapToProps = (store) => store;
 
@@ -17,11 +17,11 @@ function SendResetEmail(store) {
     errorMessage,
     notification,
     userId,
-    currentUrl,
     auth,
     getInputValue,
     getErrorMessage,
     getNotification,
+    getResetAll
   } = store;
 
   if (auth === true) {
@@ -89,9 +89,9 @@ function SendResetEmail(store) {
               <figure>
                 <img src={singIn} alt="sign in img" />
               </figure>
-              <a href={`${currentUrl}/login`} className="signup-image-link">
+              <Link to='/login' className="signup-image-link" onClick={getResetAll}>
                 Back to Login
-              </a>
+              </Link>
             </div>
 
             <div className="signin-form">
