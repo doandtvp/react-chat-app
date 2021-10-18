@@ -7,13 +7,10 @@ import actions from "../../../store/actions";
 const mapToProps = (store) => store
 
 function SuccessNotification(store) {
-  const { success, title, getNotification } = store;
+  const { success, title, getResetAll } = store;
 
   const handleClearNotification = () => {
-    getNotification({
-      notification: '',
-      userId: 0,
-    })
+    getResetAll()
   }
 
   return (

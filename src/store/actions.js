@@ -65,6 +65,25 @@ const actions = (store) => ({
     return {
       mfa: payload
     }
+  }, getOtpId: (state, payload) => {
+    return {
+      activeId: payload.activeId,
+      clientId: payload.clientId
+    }
+  }, getOtp: (state, payload) => {
+    return {
+      otp: payload
+    }
+  },
+  getToken: (state, payload) => {
+    return {
+      token: payload
+    }
+  },
+  getUser: (state, payload) => {
+    return {
+      user: payload
+    }
   },
   getCurrentTime: (state, payload) => {
     return {
@@ -84,6 +103,11 @@ const actions = (store) => ({
   getResetKey: (state, payload) => {
     return {
       resetKey: payload
+    }
+  },
+  getUpdate: (state, payload) => {
+    return {
+      isUpdate: payload
     }
   },
   getResetAll: (state, payload) => {

@@ -14,17 +14,16 @@ import './App.scss';
 const mapToProps = (store) => store
 
 function App(store) {
-  const { auth, getAuth } = store
+  const { auth, getAuth, userId } = store
   const rememberUser = localStorage.getItem('token');
   const isAuth = sessionStorage.getItem('isAuth');
 
   // remember user login
   useEffect(() => {
-    
     if(isAuth !== null || rememberUser !== null) {
       getAuth(true)
     } 
-  }, [ isAuth, rememberUser, getAuth])
+  }, [isAuth, rememberUser, getAuth, userId])
 
   return (
     <Router>
@@ -35,11 +34,11 @@ function App(store) {
             path="/"
             render={() => {
               return (
-                rememberUser !== null ?
-                <Redirect to="/homepage" /> : <Redirect to="/login" /> 
-              )
-            }}
-          />
+              rememberUser !== null ?
+              <Redirect to="/homepage" /> : <Redirect to="/login" /> 
+            )
+          }}
+        />
 
         <Route exact path='/login' component={LoginForm}/>
         <Route exact path='/signup' component={RegisterForm}/>

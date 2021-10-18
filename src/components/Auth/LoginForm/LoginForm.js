@@ -17,24 +17,29 @@ function LoginForm(store) {
   const { state } = useLocation();
   //--> state
   const {
+    mfa,
+    auth,
+    userId,
     userName,
     password,
+    rememberLogin,
     errorMessage,
     notification,
-    userId,
-    auth,
-    mfa,
   } = store;
+
   //--> actions
   const {
-    getInputValue,
-    getErrorMessage,
-    getNotification,
-    getMfa,
+    getAuth,
     getDevice,
+    getResetAll,
+    getInputValue,
+    getNotification,
+    getErrorMessage,
+    getMfa,
     getExpTime,
     getCurrentTime,
-    getResetAll
+    getOtpId,
+    getOtp,
   } = store;
   const date = new Date().getTimezoneOffset() / -60;
 
@@ -70,18 +75,31 @@ function LoginForm(store) {
       );
 
       const data = await response.json();
-      console.log(data);
+      console.log(data)
       getDevice(thisDevice);
 
       if (response.status === 200) {
-        getExpTime(10000);
-        //=> trigger timer when duration exprise
-        getCurrentTime(Date.now());
+        if(data.userId !== 0) {
+          localStorage.setItem("userId", data.userId);
+        }
 
-        getMfa(true);
-        // if(data.mfa) {
-        //   getMfa(data.mfa)
-        // }
+        //=> remember loggin 
+        if (data.token !== null && rememberLogin === "on") {
+          getAuth(true);
+          localStorage.setItem("token", data.token);
+          sessionStorage.setItem("isAuth", data.token);
+        } //=> loggin
+        else if (data.token !== null) {
+          getAuth(true);
+          sessionStorage.setItem("isAuth", data.token);
+        } else if (data.mfa) {
+          getOtp(data.otp)
+          getOtpId({ activeId: data.activeId, clientId: data.clientId });
+          getMfa(data.mfa);
+          getExpTime(120000);
+          //=> trigger timer when duration exprise
+          getCurrentTime(Date.now());
+        }
 
         getNotification({
           notification: data.loginResultMessage,
@@ -117,12 +135,13 @@ function LoginForm(store) {
               <figure>
                 <img src={singIn} alt="sign in img" />
               </figure>
-              <Link to='/signup' onClick={getResetAll} className="signup-image-link">
+              <Link
+                to="/signup"
+                onClick={getResetAll}
+                className="signup-image-link"
+              >
                 Create an account
               </Link>
-              {/* <a href={`${currentUrl}/signup`} className="signup-image-link">
-                Create an account
-              </a> */}
             </div>
             <div className="signin-form">
               <h2 className="form-title">Sign In</h2>
@@ -186,7 +205,7 @@ function LoginForm(store) {
                   onHandldeClick={handleSubmit}
                 />
 
-                <Link to='/reset_email' className="reset_email">
+                <Link to="/reset_email" className="reset_email">
                   Forgot your password?
                 </Link>
               </form>

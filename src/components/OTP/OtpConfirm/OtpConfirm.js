@@ -4,7 +4,7 @@ import { connect } from "redux-zero/react";
 import actions from "../../../store/actions";
 import OtpCountDown from "../OtpCountDown/OtpCountDown";
 import { useEffect } from "react/cjs/react.development";
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 
 const mapToProps = (store) => store;
 
@@ -19,11 +19,14 @@ function OtpConfirm(store) {
     device,
     disable,
     expTime,
+    activeId,
+    clientId
   } = store;
 
   const {
     getAuth,
     getMfa,
+    getOtp,
     getDisable,
     getResetKey,
     getCurrentTime,
@@ -40,42 +43,12 @@ function OtpConfirm(store) {
   }, [expTime, getDisable, getCurrentTime]);
 
   useEffect(() => {
-    const countdownTimer = setTimeout(() => {
-      getDisable(false);
-      getCurrentTime(expTime);
-    }, expTime);
+    handleToggle()
 
     return () => {
-      clearTimeout(countdownTimer)
+      clearInterval(handleToggle)
     }
-  }, []);
-
-  //=> get new OTP after reset
-  // useEffect(() => {
-    //=> getAllActiveOTP
-  //   const getAllActiveOTP = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         "https://localhost:5001/api/Account/GetAllActiveOTP"
-  //       );
-  //       const data = await response.json();
-
-  //       console.log(data.length);
-  //       if (data.length > 0) {
-  //         data.forEach((newOtp) => {
-  //           if (newOtp.userID === userId) {
-  //             getExpTime(10000);
-  //             console.log(newOtp.otp);
-  //           }
-  //         });
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-
-  //   getAllActiveOTP();
-  // }, [userId, getExpTime]);
+  }, [handleToggle]);
 
   //=> Validate OTP
   const handleValidateOTP = async () => {
@@ -91,28 +64,37 @@ function OtpConfirm(store) {
             userId: userId,
             otp: otpValue,
             deviceName: device,
-            expireTime: "2021-10-11T10:05:36.910Z",
             expireDuration: 3600,
             timeZoneOffset: date,
+            activeId: activeId,
+            clientId: clientId
           }),
         }
       );
 
       const data = await response.json();
+      console.log(data)
+
       if (response.status === 200) {
+        if(data.userId !== 0) {
+          localStorage.setItem("userId", data.userId);
+        }
         //=> remember loggin
         if (data.token !== null && rememberLogin === "on") {
+          getMfa(false)
           localStorage.setItem("token", data.token);
+          getAuth(true);
         } //=> loggin
         else if (data.token !== null) {
-          getAuth(true);
+          getMfa(false)
           sessionStorage.setItem("isAuth", data.token);
+          getAuth(true);
         } else {
           setIsSuccess(false);
+          setNotification(data.loginResultMessage);
         }
-
-        setNotification(data.loginResultMessage);
       }
+
     } catch (error) {
       console.log(error);
     }
@@ -137,6 +119,7 @@ function OtpConfirm(store) {
         }
       );
       const data = await response.json();
+      console.log(data)
 
       if (response.status === 200) {
         if (userId) {
@@ -144,12 +127,14 @@ function OtpConfirm(store) {
           setNotification(data.loginResultMessage);
         }
         setOtpValue("")
+        getOtp(data.otp)
 
         getCurrentTime(Date.now());
         getResetKey(Math.random());
         
         getDisable(true);
       }
+
     } catch (error) {
       console.log(error);
     }
@@ -180,19 +165,23 @@ function OtpConfirm(store) {
   const onCloseOTPTab = () => {
     getDisable(true);
     getMfa(false);
-  };
+  }; 
 
   return (
     <div className="otp">
       <div className="close-tab">
-        <Link to='/login'>
+        <a href='http://localhost:3000/login'>
           <i onClick={onCloseOTPTab} className="zmdi zmdi-close-circle-o"></i>
-        </Link>
+        </a>
+        {/* <Link to='/login'>
+          <i onClick={onCloseOTPTab} className="zmdi zmdi-close-circle-o"></i>
+        </Link> */}
       </div>
       <p>
         An OTP code was generate for you click confirm to loggin. After 2
         minutes OTP code will expried so click resend to get a new one
       </p>
+
       {/*countdown timer for OTP code */}
       <OtpCountDown />
 
