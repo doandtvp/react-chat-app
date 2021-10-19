@@ -27,6 +27,7 @@ const initialState = {
   rememberLogin: null,
   token: null,
   resetKey: undefined,
+  currentUrl: 'http://localhost:3000'
 };
 
 const store = createStore(initialState);

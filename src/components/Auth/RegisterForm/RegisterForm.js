@@ -8,7 +8,8 @@ import Button from "../../UI/Button/Button";
 import ErrorMessage from "../../UI/ErrorMessage/ErrorMessage";
 import Notification from "../../UI/Notificaton/Notification";
 import RegisterSuccess from "../../UI/Notificaton/SuccessNotification";
-import { Redirect, Link } from 'react-router-dom';
+import { Redirect, Link } from "react-router-dom";
+import { callAPI } from "../../API";
 
 const mapToProps = (store) => store;
 
@@ -29,55 +30,56 @@ function RegisterForm(store) {
     userId,
   } = store;
   //--> actions
-  const { getInputValue, getErrorMessage, getGender, getNotification, getResetAll } = store;
+  const {
+    getInputValue,
+    getErrorMessage,
+    getGender,
+    getNotification,
+    getResetAll,
+  } = store;
 
   if (auth === true) {
     return <Redirect to={"/homepage"} />;
   }
 
   const addNewUser = async () => {
+    const formData = {
+      userName: userName,
+      password: password,
+      rePassword: rePassword,
+      displayName: displayName,
+      gender: gender,
+      email: email,
+      phone: phone,
+      errorMessage: "",
+    };
+
     try {
-      const response = await fetch(
-        "https://localhost:5001/api/Account/CreateUser",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userName: userName,
-            password: password,
-            rePassword: rePassword,
-            displayName: displayName,
-            gender: gender,
-            email: email,
-            phone: phone,
-            errorMessage: "",
-          }),
+      callAPI(
+        '/Account/CreateUser',
+        "POST",
+        { "Content-Type": "application/json" },
+        formData
+      ).then(async (response) => {
+        const data = await response.json();
+
+        if (data.statusCode === 200) {
+          getNotification({
+            notification: data.restMessage,
+            userId: 1,
+          });
+        } else if (data.statusCode === 400) {
+          getErrorMessage(data.errors);
+          getNotification({
+            notification: data.restMessage,
+            userId: 0,
+          });
+        } else if (data.status === 400) {
+          getErrorMessage(data.errors);
+        } else {
+          getErrorMessage("");
         }
-      );
-
-      const data = await response.json();
-
-      if (data.statusCode === 200) {
-        getNotification({
-          notification: data.restMessage,
-          userId: 1,
-        });
-      }
-
-      if (data.status === 400) {
-        getErrorMessage(data.errors);
-      } else if (data.statusCode === 400) {
-        getErrorMessage(data.errors);
-        getNotification({
-          notification: data.restMessage,
-          userId: 0,
-        });
-      } else {
-        getErrorMessage("");
-      }
-      
+      });
     } catch (error) {
       console.log(error);
     }
@@ -99,7 +101,7 @@ function RegisterForm(store) {
   };
 
   return (
-    <div className='main'>
+    <div className="main">
       <section className="signup">
         <div className="container">
           <div className="signup-content">
@@ -266,7 +268,11 @@ function RegisterForm(store) {
               <figure>
                 <img src={signUp} alt="sign up img" />
               </figure>
-              <Link to='/login' className="signup-image-link" onClick={getResetAll}>
+              <Link
+                to="/login"
+                className="signup-image-link"
+                onClick={getResetAll}
+              >
                 I am already member
               </Link>
             </div>
@@ -274,10 +280,7 @@ function RegisterForm(store) {
         </div>
 
         {userId !== 0 && (
-          <RegisterSuccess
-            success={notification}
-            title="Back to Login"
-          />
+          <RegisterSuccess success={notification} title="Back to Login" />
         )}
       </section>
     </div>

@@ -4,7 +4,7 @@ import { connect } from "redux-zero/react";
 import actions from "../../../store/actions";
 import OtpCountDown from "../OtpCountDown/OtpCountDown";
 import { useEffect } from "react/cjs/react.development";
-// import { Link } from 'react-router-dom';
+import { callAPI } from "../../API";
 
 const mapToProps = (store) => store;
 
@@ -20,17 +20,12 @@ function OtpConfirm(store) {
     disable,
     expTime,
     activeId,
-    clientId
+    clientId,
+    currentUrl,
   } = store;
 
-  const {
-    getAuth,
-    getMfa,
-    getOtp,
-    getDisable,
-    getResetKey,
-    getCurrentTime,
-  } = store;
+  const { getAuth, getMfa, getOtp, getDisable, getResetKey, getCurrentTime } =
+    store;
   const date = new Date().getTimezoneOffset() / -60;
 
   const handleToggle = useCallback(() => {
@@ -43,58 +38,52 @@ function OtpConfirm(store) {
   }, [expTime, getDisable, getCurrentTime]);
 
   useEffect(() => {
-    handleToggle()
+    handleToggle();
 
     return () => {
-      clearInterval(handleToggle)
-    }
+      clearInterval(handleToggle);
+    };
   }, [handleToggle]);
 
   //=> Validate OTP
   const handleValidateOTP = async () => {
+    const formData = {
+      userId: userId,
+      otp: otpValue,
+      deviceName: device,
+      expireDuration: 3600,
+      timeZoneOffset: date,
+      activeId: activeId,
+      clientId: clientId,
+    };
+
     try {
-      const response = await fetch(
-        "https://localhost:5001/api/Account/ValidateOTP",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId: userId,
-            otp: otpValue,
-            deviceName: device,
-            expireDuration: 3600,
-            timeZoneOffset: date,
-            activeId: activeId,
-            clientId: clientId
-          }),
-        }
-      );
+      callAPI(
+        "/Account/ValidateOTP",
+        "POST",
+        { "Content-Type": "application/json" },
+        formData
+      ).then(async (response) => {
+        const data = await response.json();
 
-      const data = await response.json();
-      console.log(data)
-
-      if (response.status === 200) {
-        if(data.userId !== 0) {
-          localStorage.setItem("userId", data.userId);
+        if (response.status === 200) {
+          if (data.userId !== 0) {
+            localStorage.setItem("userId", data.userId);
+          }
+          //=> remember loggin
+          if (data.token !== null && rememberLogin === "on") {
+            localStorage.setItem("token", data.token);
+            getAuth(true);
+          } //=> loggin
+          else if (data.token !== null) {
+            sessionStorage.setItem("isAuth", data.token);
+            getAuth(true);
+          } else {
+            setIsSuccess(false);
+            setNotification(data.loginResultMessage);
+          }
         }
-        //=> remember loggin
-        if (data.token !== null && rememberLogin === "on") {
-          getMfa(false)
-          localStorage.setItem("token", data.token);
-          getAuth(true);
-        } //=> loggin
-        else if (data.token !== null) {
-          getMfa(false)
-          sessionStorage.setItem("isAuth", data.token);
-          getAuth(true);
-        } else {
-          setIsSuccess(false);
-          setNotification(data.loginResultMessage);
-        }
-      }
-
+      });
     } catch (error) {
       console.log(error);
     }
@@ -102,39 +91,36 @@ function OtpConfirm(store) {
 
   //=> reset OTP
   const resendOTP = async () => {
+    const formData = {
+      userId: userId,
+      deviceName: device,
+      expireDuration: 3600,
+      timeZoneOffset: date,
+    };
+
     try {
-      const response = await fetch(
-        "https://localhost:5001/api/Account/ResendOTP",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId: userId,
-            deviceName: device,
-            expireDuration: 3600,
-            timeZoneOffset: date,
-          }),
+      callAPI(
+        "/Account/ResendOTP",
+        "POST",
+        { "Content-Type": "application/json" },
+        formData
+      ).then(async (response) => {
+        const data = await response.json();
+
+        if (response.status === 200) {
+          if (userId) {
+            setIsSuccess(true);
+            setNotification(data.loginResultMessage);
+          }
+          setOtpValue("");
+          getOtp(data.otp);
+
+          getCurrentTime(Date.now());
+          getResetKey(Math.random());
+
+          getDisable(true);
         }
-      );
-      const data = await response.json();
-      console.log(data)
-
-      if (response.status === 200) {
-        if (userId) {
-          setIsSuccess(true);
-          setNotification(data.loginResultMessage);
-        }
-        setOtpValue("")
-        getOtp(data.otp)
-
-        getCurrentTime(Date.now());
-        getResetKey(Math.random());
-        
-        getDisable(true);
-      }
-
+      });
     } catch (error) {
       console.log(error);
     }
@@ -149,12 +135,12 @@ function OtpConfirm(store) {
 
   //=> get otp from input
   const handleChange = (e) => {
-    setOtpValue(e.target.value)
+    setOtpValue(e.target.value);
 
-    if(e.target.value !== "") {
-      setNotification("")
+    if (e.target.value !== "") {
+      setNotification("");
     }
-  }
+  };
 
   //=> prevent loading when user trigger enter
   const handleSubmit = (e) => {
@@ -165,17 +151,14 @@ function OtpConfirm(store) {
   const onCloseOTPTab = () => {
     getDisable(true);
     getMfa(false);
-  }; 
+  };
 
   return (
     <div className="otp">
       <div className="close-tab">
-        <a href='http://localhost:3000/login'>
+        <a href={`${currentUrl}/login`}>
           <i onClick={onCloseOTPTab} className="zmdi zmdi-close-circle-o"></i>
         </a>
-        {/* <Link to='/login'>
-          <i onClick={onCloseOTPTab} className="zmdi zmdi-close-circle-o"></i>
-        </Link> */}
       </div>
       <p>
         An OTP code was generate for you click confirm to loggin. After 2

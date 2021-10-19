@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./UserCP.scss";
 import { connect } from "redux-zero/react";
 import actions from "../../../store/actions";
 import Input from "../../UI/Input/Input";
 import ErrorMessage from "../../UI/ErrorMessage/ErrorMessage";
 import Button from "../../UI/Button/Button";
+import { callAPI } from "../../API";
 
 const mapToProps = (store) => store;
 
@@ -19,25 +20,14 @@ function UserCP(store) {
     userId,
     user,
     mfa,
-    mfaLogin,
     errorMessage,
     validatePhoneNumber,
+    currentUrl,
   } = store;
 
-  const {
-    getInputValue,
-    getErrorMessage,
-    getUpdate,
-    getMfa,
-  } = store;
+  const { getInputValue, getErrorMessage, getUpdate, getMfa } = store;
 
   const token = sessionStorage.getItem("isAuth");
-
-  useEffect(() => {
-    if (mfaLogin === "on") {
-      getMfa(true);
-    }
-  }, [mfaLogin, getMfa]);
 
   const handleChange = (e) => {
     const value = e.target.value;
@@ -50,36 +40,35 @@ function UserCP(store) {
   };
 
   const saveUserCP = async () => {
+    const formData = {
+      userID: userId,
+      userName: userName,
+      displayName: displayName,
+      email: email,
+      phone: phone,
+      mfa: mfa,
+      user: user,
+    };
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
+
     try {
-      const response = await fetch(
-        "https://localhost:5001/api/Account/SaveUserCP",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userID: userId,
-            userName: userName,
-            displayName: displayName,
-            email: email,
-            phone: phone,
-            mfa: mfa,
-            user: user,
-          }),
+      callAPI("/Account/SaveUserCP", "POST", headers, formData).then(
+        async (response) => {
+          const data = await response.json();
+
+          if (data.statusCode === 200) {
+            setUpdateSuccess(data.restMessage);
+          } else if (data.statusCode === 400) {
+            getErrorMessage(data.errors);
+          } else if (data.status === 400) {
+            getErrorMessage(data.errors);
+          }
         }
       );
-
-      const data = await response.json();
-
-      if (data.statusCode === 200) {
-        setUpdateSuccess(data.restMessage);
-      } else if (data.statusCode === 400) {
-        getErrorMessage(data.errors);
-      } else if (data.status === 400) {
-        getErrorMessage(data.errors);
-      }
     } catch (error) {
       console.log(error);
     }
@@ -92,6 +81,11 @@ function UserCP(store) {
 
   const onCloseUpdateModal = () => {
     getUpdate(false);
+  };
+
+  // toggle using otp for loggin
+  const toggleOTP = () => {
+    getMfa(!mfa);
   };
 
   return (
@@ -161,13 +155,15 @@ function UserCP(store) {
           {validatePhoneNumber && <ErrorMessage error={validatePhoneNumber} />}
         </div>
 
-        <div className="form-group">
+        <div>
           <input
             type="checkbox"
             name="mfaLogin"
             id="mfaLogin"
             className="agree-term"
             onChange={handleChange}
+            onClick={toggleOTP}
+            defaultChecked={mfa}
           />
 
           <label htmlFor="mfaLogin" className="label-agree-term">
@@ -190,7 +186,7 @@ function UserCP(store) {
       {updateSuccess && (
         <div className="update-success">
           <p>{updateSuccess}</p>
-          <a href="http://localhost:3000/homepage">Back to Homepage</a>
+          <a href={`${currentUrl}/homepage`}>Back to Homepage</a>
         </div>
       )}
     </div>

@@ -6,8 +6,9 @@ import { connect } from "redux-zero/react";
 import actions from "../../../store/actions";
 import ErrorMessage from "../../UI/ErrorMessage/ErrorMessage";
 import Notification from "../../UI/Notificaton/Notification";
-import SuccessNotification from '../../UI/Notificaton/SuccessNotification';
-import { Redirect, Link } from 'react-router-dom';
+import SuccessNotification from "../../UI/Notificaton/SuccessNotification";
+import { Redirect, Link } from "react-router-dom";
+import { callAPI } from "../../API";
 
 const mapToProps = (store) => store;
 
@@ -18,10 +19,11 @@ function SendResetEmail(store) {
     notification,
     userId,
     auth,
+    currentUrl,
     getInputValue,
     getErrorMessage,
     getNotification,
-    getResetAll
+    getResetAll,
   } = store;
 
   if (auth === true) {
@@ -30,41 +32,39 @@ function SendResetEmail(store) {
 
   //--> check mail in database
   const handleResetMail = async () => {
+    const formData = {
+      email: email,
+      domain: `${currentUrl}/reset_password`,
+    };
+
     try {
-      const response = await fetch(
-        "https://localhost:5001/api/Account/SendResetEmail",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: email,
-            domain: 'http://localhost:3000/reset_password'
-          }),
+      callAPI(
+        '/Account/SendResetEmail',
+        "POST",
+        { "Content-Type": "application/json" },
+        formData
+      ).then(async (response) => {
+        const data = await response.json();
+
+        if (data.statusCode === 200) {
+          getNotification({
+            notification: data.restMessage,
+            userId: data.data[1],
+          });
+
+          getErrorMessage("");
+        } else if (data.statusCode === 400) {
+          getNotification({
+            notification: data.restMessage,
+            userId: 0,
+          });
+          getErrorMessage("");
         }
-      );
 
-      const data = await response.json();
-      if (data.statusCode === 200) {
-
-        getNotification({
-          notification: data.restMessage,
-          userId: data.data[1],
-        });
-
-        getErrorMessage("");
-      } else if (data.statusCode === 400) {
-        getNotification({
-          notification: data.restMessage,
-          userId: 0,
-        });
-        getErrorMessage("");
-      }
-
-      if (response.status === 400) {
-        getErrorMessage(data.errors);
-      }
+        if (response.status === 400) {
+          getErrorMessage(data.errors);
+        }
+      });
     } catch (error) {
       console.log(error);
     }
@@ -89,7 +89,11 @@ function SendResetEmail(store) {
               <figure>
                 <img src={singIn} alt="sign in img" />
               </figure>
-              <Link to='/login' className="signup-image-link" onClick={getResetAll}>
+              <Link
+                to="/login"
+                className="signup-image-link"
+                onClick={getResetAll}
+              >
                 Back to Login
               </Link>
             </div>
@@ -151,7 +155,7 @@ function SendResetEmail(store) {
           <SuccessNotification
             success={notification}
             title="Back to Login"
-            url='/login'
+            url="/login"
           />
         )}
       </section>

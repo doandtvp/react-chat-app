@@ -10,6 +10,7 @@ import Notification from "../../UI/Notificaton/Notification";
 import OtpConfirm from "../../OTP/OtpConfirm/OtpConfirm";
 import { Redirect, Link } from "react-router-dom";
 import { useLocation } from "react-router";
+import { callAPI } from "../../API";
 
 const mapToProps = (store) => store;
 
@@ -56,60 +57,60 @@ function LoginForm(store) {
   }
 
   const handleLogin = async () => {
+    getDevice(thisDevice);
+
+    const formData = {
+      userName: userName,
+      password: password,
+      deviceName: thisDevice,
+      expireDuration: 3600,
+      timeZoneOffset: date,
+    };
+
     try {
-      const response = await fetch(
-        "https://localhost:5001/api/Account/IdentityLoginRequest",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userName: userName,
-            password: password,
-            deviceName: thisDevice,
-            expireDuration: 3600,
-            timeZoneOffset: date,
-          }),
+      callAPI(
+        '/Account/IdentityLoginRequest',
+        "POST",
+        { "Content-Type": "application/json" },
+        formData
+      ).then(async (response) => {
+        const data = await response.json();
+
+        if (response.status === 200) {
+          if (data.userId !== 0) {
+            localStorage.setItem("userId", data.userId);
+          }
+          //=> remember loggin
+          if (data.token !== null && rememberLogin === "on") {
+            getAuth(true);
+            localStorage.setItem("token", data.token);
+            sessionStorage.setItem("isAuth", data.token);
+          } //=> loggin
+          else if (data.token !== null) {
+            getAuth(true);
+            sessionStorage.setItem("isAuth", data.token);
+          } else if (data.mfa) {
+            getOtp(data.otp);
+            getOtpId({
+              activeId: data.activeId,
+              clientId: data.clientId,
+            });
+            getMfa(data.mfa);
+            getExpTime(120000);
+            //=> trigger timer when duration exprise
+            getCurrentTime(Date.now());
+          }
+
+          getNotification({
+            notification: data.loginResultMessage,
+            userId: data.userId,
+          });
+
+          getErrorMessage("");
+        } else if (response.status === 400) {
+          getErrorMessage(data.errors);
         }
-      );
-
-      const data = await response.json();
-      console.log(data)
-      getDevice(thisDevice);
-
-      if (response.status === 200) {
-        if(data.userId !== 0) {
-          localStorage.setItem("userId", data.userId);
-        }
-
-        //=> remember loggin 
-        if (data.token !== null && rememberLogin === "on") {
-          getAuth(true);
-          localStorage.setItem("token", data.token);
-          sessionStorage.setItem("isAuth", data.token);
-        } //=> loggin
-        else if (data.token !== null) {
-          getAuth(true);
-          sessionStorage.setItem("isAuth", data.token);
-        } else if (data.mfa) {
-          getOtp(data.otp)
-          getOtpId({ activeId: data.activeId, clientId: data.clientId });
-          getMfa(data.mfa);
-          getExpTime(120000);
-          //=> trigger timer when duration exprise
-          getCurrentTime(Date.now());
-        }
-
-        getNotification({
-          notification: data.loginResultMessage,
-          userId: data.userId,
-        });
-
-        getErrorMessage("");
-      } else if (response.status === 400) {
-        getErrorMessage(data.errors);
-      }
+      });
     } catch (error) {
       console.log(error);
     }
@@ -205,7 +206,11 @@ function LoginForm(store) {
                   onHandldeClick={handleSubmit}
                 />
 
-                <Link to="/reset_email" className="reset_email">
+                <Link
+                  to="/reset_email"
+                  onClick={getResetAll}
+                  className="reset_email"
+                >
                   Forgot your password?
                 </Link>
               </form>

@@ -118,6 +118,7 @@ const actions = (store) => ({
       email: '',
       displayName: '',
       phone: '',
+      rememberLogin: null,
       notification: '',
       errorMessage: '',
       userId: 0,

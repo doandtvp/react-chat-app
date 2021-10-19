@@ -7,17 +7,14 @@ import { connect } from "redux-zero/react";
 const mapToProps = (store) => store;
 
 function UserProfile(store) {
-  const { getInputValue, getAuth, getUpdate } = store;
+  const { getAuth, getUpdate, currentUrl, getResetAll } = store;
 
   const handleLogout = () => {
     getAuth(false);
     getUpdate(false)
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    sessionStorage.removeItem("isAuth");
-    const name = "rememberLogin";
-    const value = null;
-    getInputValue({ name, value });
+    localStorage.clear();
+    sessionStorage.clear();
+    getResetAll()
   };
 
   const openUpdateModal = () => {
@@ -30,7 +27,7 @@ function UserProfile(store) {
         <i className="zmdi zmdi-arrow-left"></i>
         <a
           onClick={handleLogout}
-          href='http://localhost:3000/login'
+          href={`${currentUrl}/login`}
           className="logout"
         >
           {" "}

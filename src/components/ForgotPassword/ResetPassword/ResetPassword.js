@@ -10,7 +10,7 @@ import actions from "../../../store/actions";
 import ErrorMessage from "../../UI/ErrorMessage/ErrorMessage";
 import Notification from "../../UI/Notificaton/Notification";
 import SuccessNotification from "../../UI/Notificaton/SuccessNotification";
-
+import { callAPI } from "../../API";
 
 const mapToProps = (store) => store;
 
@@ -24,33 +24,37 @@ function ResetPassword(store) {
     errorMessage,
     notification,
     userId,
-    auth
+    auth,
+    url,
   } = store;
 
   //--> actions
-  const { getInputValue, getErrorMessage, getNotification, getResetAll } = store;
+  const { getInputValue, getErrorMessage, getNotification, getResetAll } =
+    store;
 
   const reset = useLocation().search;
   const userID = new URLSearchParams(reset).get("uid");
   const token = new URLSearchParams(reset).get("token");
 
   useEffect(() => {
-    if(userID && token) {
-      const url = `https://localhost:5001/api/Account/ResetPassword?uid=${userID}&token=${token}`
+    if (userID && token) {
+      const reset = `/Account/ResetPassword?uid=${userID}&token=${token}`;
+
       const confirmResetPassword = async () => {
         try {
-          const response = await fetch(url);
-          const data = await response.json();
+          callAPI(reset, "GET").then(async (response) => {
+            const data = await response.json();
 
-          if (data.data === null) {
-            setExpried(true);
-          } else {
-            setExpried(false);
-          }
+            if (data.data === null) {
+              setExpried(true);
+            } else {
+              setExpried(false);
+            }
 
-          return () => {
-            setExpried(false); 
-          };
+            return () => {
+              setExpried(false);
+            };
+          });
         } catch (error) {
           console.log(error);
         }
@@ -58,49 +62,49 @@ function ResetPassword(store) {
 
       confirmResetPassword();
     }
-  }, [userID, token]);
+  }, [userID, token, url]);
 
   if (auth === true) {
-    return <Redirect to="/homepage"/>;
+    return <Redirect to="/homepage" />;
   }
 
   const resetPassword = async () => {
+    const formData = {
+      userID: userID,
+      password: password,
+      rePassword: rePassword,
+      token: token,
+    };
+
     try {
-      const response = await fetch(
-        "https://localhost:5001/api/Account/ResetPassword",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userID: userID,
-            password: password,
-            rePassword: rePassword,
-            token: token,
-          }),
+      callAPI(
+        `/Account/ResetPassword`,
+        "POST",
+        { "Content-Type": "application/json" },
+        formData
+      ).then(async (response) => {
+        const data = await response.json();
+        console.log(data);
+
+        if (data.statusCode === 200) {
+          getNotification({
+            notification: data.restMessage,
+            userId: 1,
+          });
         }
-      );
 
-      const data = await response.json();
-      if (data.statusCode === 200) {
-        getNotification({
-          notification: data.restMessage,
-          userId: 1,
-        });
-      }
-
-      if (data.status === 400) {
-        getErrorMessage(data.errors);
-      } else if (data.statusCode === 400) {
-        getErrorMessage(data.errors);
-        getNotification({
-          notification: data.restMessage,
-          userId: 0,
-        });
-      } else {
-        getErrorMessage("");
-      }
+        if (data.status === 400) {
+          getErrorMessage(data.errors);
+        } else if (data.statusCode === 400) {
+          getErrorMessage(data.errors);
+          getNotification({
+            notification: data.restMessage,
+            userId: 0,
+          });
+        } else {
+          getErrorMessage("");
+        }
+      });
     } catch (error) {
       console.log(error);
     }
@@ -177,9 +181,7 @@ function ResetPassword(store) {
                 <div className="new-token">
                   This reset password email is not available. It might be used
                   or expired. Please{" "}
-                  <Link to='/reset_email'>
-                    send a new reset password email
-                  </Link>
+                  <Link to="/reset_email">send a new reset password email</Link>
                 </div>
               )}
             </div>
@@ -187,7 +189,11 @@ function ResetPassword(store) {
               <figure>
                 <img src={signUp} alt="sign up img" />
               </figure>
-              <Link to='/login' className="signup-image-link" onClick={getResetAll}>
+              <Link
+                to="/login"
+                className="signup-image-link"
+                onClick={getResetAll}
+              >
                 Back to Login
               </Link>
             </div>
@@ -195,10 +201,7 @@ function ResetPassword(store) {
         </div>
 
         {userId !== 0 && (
-          <SuccessNotification
-            success={notification}
-            title="Back to Login"
-          />
+          <SuccessNotification success={notification} title="Back to Login" />
         )}
       </section>
     </div>
