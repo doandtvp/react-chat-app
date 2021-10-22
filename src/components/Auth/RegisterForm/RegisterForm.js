@@ -28,6 +28,7 @@ function RegisterForm(store) {
     validatePhoneNumber,
     notification,
     userId,
+    toggleViewPass
   } = store;
   //--> actions
   const {
@@ -36,6 +37,7 @@ function RegisterForm(store) {
     getGender,
     getNotification,
     getResetAll,
+    getToggleViewPass
   } = store;
 
   if (auth === true) {
@@ -130,37 +132,48 @@ function RegisterForm(store) {
                   )}
                 </div>
 
-                <div className="fields-group">
-                  <Input
-                    type="password"
-                    name="password"
-                    id="password"
-                    placeholder="Your Password"
-                    icons="zmdi-lock"
-                    value={password}
-                    onHandleChange={handleChange}
-                  />
+                <div className="fields-group loginPass">
+                    <Input
+                      type={toggleViewPass ? "text" : "password"}
+                      name="password"
+                      id="password"
+                      placeholder="Your Password"
+                      icons="zmdi-lock"
+                      value={password}
+                      onHandleChange={handleChange}
+                    />
 
-                  {errorMessage.Password && (
-                    <ErrorMessage error={errorMessage.Password[0]} />
-                  )}
-                </div>
+                    {errorMessage.Password && (
+                      <ErrorMessage error={errorMessage.Password[0]} />
+                    )}
 
-                <div className="fields-group">
-                  <Input
-                    type="password"
-                    name="rePassword"
-                    id="rePassword"
-                    placeholder="Confirm Password"
-                    icons="zmdi-lock-outline"
-                    value={rePassword}
-                    onHandleChange={handleChange}
-                  />
+                    <i
+                      onClick={getToggleViewPass}
+                      className={
+                        toggleViewPass
+                          ? "zmdi zmdi-eye-off togglePass"
+                          : "zmdi zmdi-eye togglePass"
+                      }
+                      title={toggleViewPass ? "Hide Password" : "Show Password"}
+                    ></i>
+                  </div>
 
-                  {errorMessage.RePassword && (
-                    <ErrorMessage error={errorMessage.RePassword[0]} />
-                  )}
-                </div>
+                  <div className="fields-group">
+                    <Input
+                      type={toggleViewPass ? "text" : "password"}
+                      name="rePassword"
+                      id="rePassword"
+                      placeholder="Confirm New Password"
+                      icons="zmdi-lock-outline"
+                      value={rePassword}
+                      onHandleChange={handleChange}
+                    />
+
+                    {errorMessage.RePassword && (
+                      <ErrorMessage error={errorMessage.RePassword[0]} />
+                    )}
+
+                  </div>
 
                 <div className="fields-group">
                   <Input

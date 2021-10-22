@@ -123,6 +123,7 @@ const actions = (store) => ({
       errorMessage: '',
       userId: 0,
       mfa: false,
+      toggleViewPass: false
     }
   },
   getToggleViewPass: (state, payload) => {
