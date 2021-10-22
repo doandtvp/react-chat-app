@@ -26,6 +26,7 @@ function LoginForm(store) {
     rememberLogin,
     errorMessage,
     notification,
+    toggleViewPass
   } = store;
 
   //--> actions
@@ -41,6 +42,7 @@ function LoginForm(store) {
     getCurrentTime,
     getOtpId,
     getOtp,
+    getToggleViewPass
   } = store;
   const date = new Date().getTimezoneOffset() / -60;
 
@@ -69,7 +71,7 @@ function LoginForm(store) {
 
     try {
       callAPI(
-        '/Account/IdentityLoginRequest',
+        "/Account/IdentityLoginRequest",
         "POST",
         { "Content-Type": "application/json" },
         formData
@@ -127,6 +129,7 @@ function LoginForm(store) {
     handleLogin();
   };
 
+
   return (
     <div className="main">
       <section className="sign-in">
@@ -166,9 +169,9 @@ function LoginForm(store) {
                   )}
                 </div>
 
-                <div className="fields-group">
+                <div className="fields-group loginPass">
                   <Input
-                    type="password"
+                    type={toggleViewPass ? "text" : "password"}
                     name="password"
                     id="password"
                     placeholder="Your Password"
@@ -180,6 +183,12 @@ function LoginForm(store) {
                   {errorMessage.Password && (
                     <ErrorMessage error={errorMessage.Password[0]} />
                   )}
+
+                  <i
+                    onClick={getToggleViewPass}
+                    className={toggleViewPass ? "zmdi zmdi-eye-off togglePass" : "zmdi zmdi-eye togglePass"}
+                    title={toggleViewPass ? "Hide Password" : "Show Password"}
+                  ></i>
                 </div>
 
                 <div className="form-group">

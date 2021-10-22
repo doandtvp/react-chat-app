@@ -97,3 +97,14 @@
   text-decoration: underline;
   cursor: pointer;
 }
+
+.loginPass {
+  position: relative;
+}
+
+.togglePass {
+  position: absolute;
+  cursor: pointer;
+  right: 0;
+  top: 35%;
+}

@@ -26,11 +26,17 @@ function ResetPassword(store) {
     userId,
     auth,
     url,
+    toggleViewPass,
   } = store;
 
   //--> actions
-  const { getInputValue, getErrorMessage, getNotification, getResetAll } =
-    store;
+  const {
+    getInputValue,
+    getErrorMessage,
+    getNotification,
+    getResetAll,
+    getToggleViewPass,
+  } = store;
 
   const reset = useLocation().search;
   const userID = new URLSearchParams(reset).get("uid");
@@ -137,12 +143,12 @@ function ResetPassword(store) {
               )}
               {!expired ? (
                 <form className="register-form">
-                  <div className="fields-group">
+                  <div className="fields-group loginPass">
                     <Input
-                      type="password"
+                      type={toggleViewPass ? "text" : "password"}
                       name="password"
                       id="password"
-                      placeholder="Your New Password"
+                      placeholder="Your Password"
                       icons="zmdi-lock"
                       value={password}
                       onHandleChange={handleChange}
@@ -151,11 +157,21 @@ function ResetPassword(store) {
                     {errorMessage.Password && (
                       <ErrorMessage error={errorMessage.Password[0]} />
                     )}
+
+                    <i
+                      onClick={getToggleViewPass}
+                      className={
+                        toggleViewPass
+                          ? "zmdi zmdi-eye-off togglePass"
+                          : "zmdi zmdi-eye togglePass"
+                      }
+                      title={toggleViewPass ? "Hide Password" : "Show Password"}
+                    ></i>
                   </div>
 
                   <div className="fields-group">
                     <Input
-                      type="password"
+                      type={toggleViewPass ? "text" : "password"}
                       name="rePassword"
                       id="rePassword"
                       placeholder="Confirm New Password"
@@ -167,6 +183,7 @@ function ResetPassword(store) {
                     {errorMessage.RePassword && (
                       <ErrorMessage error={errorMessage.RePassword[0]} />
                     )}
+
                   </div>
 
                   <Button

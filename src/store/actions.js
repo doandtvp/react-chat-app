@@ -124,6 +124,11 @@ const actions = (store) => ({
       userId: 0,
       mfa: false,
     }
+  },
+  getToggleViewPass: (state, payload) => {
+    return {
+      toggleViewPass: !state.toggleViewPass
+    }
   }
 });
 

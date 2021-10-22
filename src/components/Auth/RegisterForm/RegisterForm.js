@@ -19,7 +19,7 @@ function RegisterForm(store) {
     userName,
     password,
     rePassword,
-    displayName,
+    alias,
     email,
     phone,
     gender,
@@ -47,7 +47,7 @@ function RegisterForm(store) {
       userName: userName,
       password: password,
       rePassword: rePassword,
-      displayName: displayName,
+      displayName: alias,
       gender: gender,
       email: email,
       phone: phone,
@@ -184,11 +184,11 @@ function RegisterForm(store) {
                 <div className="fields-group">
                   <Input
                     type="text"
-                    name="displayName"
-                    id="displayName"
+                    name="alias"
+                    id="alias"
                     placeholder="Your Display Name"
                     icons="zmdi-face"
-                    value={displayName}
+                    value={alias}
                     onHandleChange={handleChange}
                   />
                   {errorMessage.DisplayName && (

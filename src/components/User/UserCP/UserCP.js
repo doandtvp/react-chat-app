@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./UserCP.scss";
 import { connect } from "redux-zero/react";
 import actions from "../../../store/actions";
@@ -16,7 +16,7 @@ function UserCP(store) {
     userName,
     phone,
     email,
-    displayName,
+    alias,
     userId,
     user,
     mfa,
@@ -26,8 +26,16 @@ function UserCP(store) {
   } = store;
 
   const { getInputValue, getErrorMessage, getUpdate, getMfa } = store;
-
   const token = sessionStorage.getItem("isAuth");
+
+  useEffect(() => {
+  
+    for (const property in user) {
+      const name = property
+      const value = user[property]
+      getInputValue({ name, value })
+    }
+  }, [user, getInputValue])
 
   const handleChange = (e) => {
     const value = e.target.value;
@@ -43,7 +51,7 @@ function UserCP(store) {
     const formData = {
       userID: userId,
       userName: userName,
-      displayName: displayName,
+      displayName: alias,
       email: email,
       phone: phone,
       mfa: mfa,
@@ -129,11 +137,11 @@ function UserCP(store) {
         <div className="fields-group">
           <Input
             type="text"
-            name="displayName"
-            id="displayName"
+            name="alias"
+            id="alias"
             placeholder="Your Display Name"
             icons="zmdi-face"
-            value={displayName}
+            value={alias}
             onHandleChange={handleChange}
           />
           {errorMessage.DisplayName && (
